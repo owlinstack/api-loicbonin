@@ -80,6 +80,82 @@ final class ArticleApiTest extends TestCase
         $response->assertJsonMissing(['slug' => 'article-brouillon']);
     }
 
+    public function test_can_filter_articles_by_category(): void
+    {
+        $otherCategory = Category::create([
+            'slug' => 'frontend',
+            'label' => 'Frontend',
+        ]);
+
+        Article::create([
+            'title' => 'Article Backend',
+            'slug' => 'article-backend',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 5,
+            'featured' => false,
+            'published_at' => now()->subDay(),
+        ]);
+
+        Article::create([
+            'title' => 'Article Frontend',
+            'slug' => 'article-frontend',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $otherCategory->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 5,
+            'featured' => false,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $response = $this->getJson('/api/v1/articles?category=backend');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['slug' => 'article-backend'])
+            ->assertJsonMissing(['slug' => 'article-frontend']);
+    }
+
+    public function test_can_filter_articles_by_tag(): void
+    {
+        $tagPhp = Tag::create(['name' => 'PHP']);
+        $tagJs = Tag::create(['name' => 'JS']);
+
+        $articlePhp = Article::create([
+            'title' => 'Article PHP',
+            'slug' => 'article-php',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 5,
+            'featured' => false,
+            'published_at' => now()->subDay(),
+        ]);
+        $articlePhp->tags()->sync([$tagPhp->id]);
+
+        $articleJs = Article::create([
+            'title' => 'Article JS',
+            'slug' => 'article-js',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 5,
+            'featured' => false,
+            'published_at' => now()->subDay(),
+        ]);
+        $articleJs->tags()->sync([$tagJs->id]);
+
+        $response = $this->getJson('/api/v1/articles?tag=PHP');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['slug' => 'article-php'])
+            ->assertJsonMissing(['slug' => 'article-js']);
+    }
+
     public function test_can_get_single_published_article(): void
     {
         $tag = Tag::create(['name' => 'Laravel']);

@@ -63,4 +63,10 @@ final class ProjectApiTest extends TestCase
             ->assertJsonPath('slug', 'project-beta')
             ->assertJsonPath('techStack.0', 'Laravel');
     }
+
+    public function test_get_non_existent_project_returns_404(): void
+    {
+        $response = $this->getJson('/api/v1/projects/non-existent');
+        $response->assertStatus(404);
+    }
 }

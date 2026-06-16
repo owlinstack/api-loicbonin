@@ -119,4 +119,10 @@ final class GeneralApiTest extends TestCase
             ->assertJsonPath('content', '<?php echo "hello";')
             ->assertJsonPath('linkedArticleSlug', 'article-code');
     }
+
+    public function test_get_non_existent_code_file_returns_404(): void
+    {
+        $response = $this->getJson('/api/v1/code/files/non-existent.php');
+        $response->assertStatus(404);
+    }
 }
