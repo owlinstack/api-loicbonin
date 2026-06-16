@@ -1,0 +1,9 @@
+{
+  "preset": "laravel",
+  "rules": {
+    "declare_strict_types": true,
+    "final_class": true,
+    "void_return": true,
+    "no_unused_imports": true
+  }
+}
