@@ -49,6 +49,18 @@ final class GeneralApiTest extends TestCase
 
     public function test_can_get_profile(): void
     {
+        \App\Models\Profile::create([
+            'name' => 'Loïc de Test',
+            'bio' => 'Ma Bio de test',
+            'skills' => [
+                ['term' => 'HTML', 'description' => 'Super Skill']
+            ],
+            'timeline' => [
+                ['date' => '2026', 'title' => 'Test Job', 'description' => 'Job description']
+            ],
+            'cv_url' => 'cvs/test-cv.pdf',
+        ]);
+
         $response = $this->getJson('/api/v1/profile');
 
         $response->assertStatus(200)
@@ -69,7 +81,11 @@ final class GeneralApiTest extends TestCase
                     ]
                 ],
                 'cvUrl',
-            ]);
+            ])
+            ->assertJsonPath('name', 'Loïc de Test')
+            ->assertJsonPath('bio', 'Ma Bio de test')
+            ->assertJsonPath('skills.0.term', 'HTML')
+            ->assertJsonPath('timeline.0.title', 'Test Job');
     }
 
     public function test_can_get_code_tree_and_files(): void

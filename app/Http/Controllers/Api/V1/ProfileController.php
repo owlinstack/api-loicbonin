@@ -11,10 +11,15 @@ class ProfileController extends Controller
 {
     public function show(): ProfileResource
     {
-        // Simplification: Données statiques de Loïc Bonin en mémoire pour la V1.
-        // Plafond: Pas de base de données ni d'édition via Filament pour le profil.
-        // Plan d'évolution: Déplacer dans ProfileData DTO avec configuration .env ou DB.
-        $data = [
+        $profile = \App\Models\Profile::first();
+
+        $data = $profile ? [
+            'name' => $profile->name,
+            'bio' => $profile->bio,
+            'skills' => $profile->skills,
+            'timeline' => $profile->timeline,
+            'cvUrl' => $profile->cv_url ? asset('storage/' . $profile->cv_url) : '/cv-loic-bonin.pdf',
+        ] : [
             'name' => 'Loïc Bonin',
             'bio' => "Développeur full-stack basé à Paris. Je construis des interfaces de lecture, des outils pour équipes éditoriales et des systèmes de synchronisation de données. Passionné par la typographie, les standards du web et les DX raisonnables.",
             'skills' => [
