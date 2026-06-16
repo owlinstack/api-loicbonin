@@ -46,7 +46,23 @@ final class ArticleResource extends Resource
                         ->columnSpanFull(),
                     Forms\Components\MarkdownEditor::make('content')
                         ->required()
-                        ->columnSpanFull(),
+                        ->columnSpanFull()
+                        ->minHeight('400px')
+                        ->placeholder('Rédigez le contenu de votre article ici au format Markdown...')
+                        ->toolbarButtons([
+                            'attachFiles',
+                            'blockquote',
+                            'bold',
+                            'bulletList',
+                            'codeBlock',
+                            'heading',
+                            'italic',
+                            'link',
+                            'orderedList',
+                            'redo',
+                            'strike',
+                            'undo',
+                        ]),
                 ]),
 
             Section::make('Métadonnées')
