@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Resources\V1;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * @property \App\Models\CodeFile $resource
+ */
+class CodeFileResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'name' => $this->resource->name,
+            'path' => $this->resource->path,
+            'language' => $this->resource->language,
+            'content' => $this->resource->content,
+            'linkedArticleSlug' => $this->resource->linkedArticle?->slug,
+            'linkedArticleTitle' => $this->resource->linkedArticle?->title,
+        ];
+    }
+}
