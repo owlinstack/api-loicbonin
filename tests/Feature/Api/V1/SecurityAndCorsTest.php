@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 final class SecurityAndCorsTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_cors_headers_are_present_for_allowed_origins(): void
     {
         $response = $this->withHeaders([
