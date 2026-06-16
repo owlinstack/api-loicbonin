@@ -56,7 +56,20 @@ final class ArticleResource extends Resource
                         ->relationship('category', 'label')
                         ->required()
                         ->searchable()
-                        ->preload(),
+                        ->preload()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('label')
+                                ->required()
+                                ->maxLength(255)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn ($state, $set) =>
+                                    $set('slug', str($state)->slug()->toString())
+                                ),
+                            Forms\Components\TextInput::make('slug')
+                                ->required()
+                                ->unique('categories', 'slug')
+                                ->maxLength(255),
+                        ]),
                     Forms\Components\Select::make('tags')
                         ->relationship('tags', 'name')
                         ->multiple()
