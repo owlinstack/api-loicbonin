@@ -19,7 +19,7 @@ use Filament\Tables\Table;
 final class ArticleResource extends Resource
 {
     protected static ?string $model = Article::class;
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Articles';
     protected static ?int $navigationSort = 1;
 
