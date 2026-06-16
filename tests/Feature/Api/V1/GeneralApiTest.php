@@ -1,0 +1,126 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Api\V1;
+
+use App\Models\Category;
+use App\Models\Tag;
+use App\Models\Article;
+use App\Models\CodeFolder;
+use App\Models\CodeFile;
+use App\Enums\ArticleStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+final class GeneralApiTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_can_list_categories(): void
+    {
+        Category::create(['slug' => 'react', 'label' => 'React']);
+        Category::create(['slug' => 'tooling', 'label' => 'Tooling']);
+
+        $response = $this->getJson('/api/v1/categories');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'slug',
+                        'label',
+                    ]
+                ]
+            ]);
+
+        $response->assertJsonFragment(['slug' => 'react']);
+    }
+
+    public function test_can_list_tags(): void
+    {
+        Tag::create(['name' => 'Next.js']);
+        Tag::create(['name' => 'Laravel']);
+
+        $response = $this->getJson('/api/v1/tags');
+
+        $response->assertStatus(200)
+            ->assertJson(['Next.js', 'Laravel']);
+    }
+
+    public function test_can_get_profile(): void
+    {
+        $response = $this->getJson('/api/v1/profile');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'name',
+                    'bio',
+                    'skills' => [
+                        '*' => [
+                            'term',
+                            'description',
+                        ]
+                    ],
+                    'timeline' => [
+                        '*' => [
+                            'date',
+                            'title',
+                            'description',
+                        ]
+                    ],
+                    'cvUrl',
+                ]
+            ]);
+    }
+
+    public function test_can_get_code_tree_and_files(): void
+    {
+        $category = Category::create(['slug' => 'backend', 'label' => 'Backend']);
+        $article = Article::create([
+            'title' => 'Article Code',
+            'slug' => 'article-code',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now(),
+        ]);
+
+        $folder = CodeFolder::create([
+            'name' => 'app',
+            'path' => 'app',
+            'sort_order' => 1,
+        ]);
+
+        $file = CodeFile::create([
+            'name' => 'Helper.php',
+            'path' => 'app/Helper.php',
+            'language' => 'php',
+            'content' => '<?php echo "hello";',
+            'folder_id' => $folder->id,
+            'linked_article_id' => $article->id,
+            'sort_order' => 1,
+        ]);
+
+        $treeResponse = $this->getJson('/api/v1/code/tree');
+
+        $treeResponse->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'app',
+                'path' => 'app',
+            ]);
+
+        $fileResponse = $this->getJson('/api/v1/code/files/app/Helper.php');
+
+        $fileResponse->assertStatus(200)
+            ->assertJsonPath('data.name', 'Helper.php')
+            ->assertJsonPath('data.path', 'app/Helper.php')
+            ->assertJsonPath('data.language', 'php')
+            ->assertJsonPath('data.content', '<?php echo "hello";')
+            ->assertJsonPath('data.linkedArticleSlug', 'article-code');
+    }
+}
