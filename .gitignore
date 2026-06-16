@@ -1,0 +1,51 @@
+# --- Logs & OS ---
+*.log
+.DS_Store
+Thumbs.db
+
+# --- Environnement (Sécurisation maximale) ---
+# Ignore tous les fichiers .env et leurs déclinaisons (.env.local, .env.backup, .env.prod.tmp, etc.)
+.env*
+# Autorise uniquement le template d'exemple non sensible
+!.env.example
+
+# --- Base de données locale ---
+/database/*.sqlite
+/database/*.sqlite-journal
+/database/*.sqlite-wal
+
+# --- Dépendances ---
+/node_modules
+/vendor
+/auth.json
+
+# --- Compilateurs & Assets ---
+/public/build
+/public/hot
+/public/storage
+/public/fonts-manifest.dev.json
+
+# --- Outils de Tests & Analyse ---
+/.phpunit.cache
+/.phpunit.result.cache
+/tests/coverage
+/.phpstan
+/.larastan-tmp
+
+# --- IDEs & Éditeurs ---
+/.cursor/
+/.idea
+/.vscode
+/.nova
+/.zed
+/.fleet
+/.codex
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+
+# --- Laravel Storage ---
+/storage/*.key
+/storage/pail
+Homestead.json
+Homestead.yaml
