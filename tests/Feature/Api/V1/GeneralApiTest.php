@@ -26,12 +26,10 @@ final class GeneralApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
-                    '*' => [
-                        'id',
-                        'slug',
-                        'label',
-                    ]
+                '*' => [
+                    'slug',
+                    'label',
+                    'count',
                 ]
             ]);
 
@@ -45,8 +43,8 @@ final class GeneralApiTest extends TestCase
 
         $response = $this->getJson('/api/v1/tags');
 
-        $response->assertStatus(200)
-            ->assertJson(['Next.js', 'Laravel']);
+        $response->assertStatus(200);
+        $this->assertEqualsCanonicalizing(['Next.js', 'Laravel'], $response->json());
     }
 
     public function test_can_get_profile(): void
@@ -55,24 +53,22 @@ final class GeneralApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
-                    'name',
-                    'bio',
-                    'skills' => [
-                        '*' => [
-                            'term',
-                            'description',
-                        ]
-                    ],
-                    'timeline' => [
-                        '*' => [
-                            'date',
-                            'title',
-                            'description',
-                        ]
-                    ],
-                    'cvUrl',
-                ]
+                'name',
+                'bio',
+                'skills' => [
+                    '*' => [
+                        'term',
+                        'description',
+                    ]
+                ],
+                'timeline' => [
+                    '*' => [
+                        'date',
+                        'title',
+                        'description',
+                    ]
+                ],
+                'cvUrl',
             ]);
     }
 
@@ -117,10 +113,10 @@ final class GeneralApiTest extends TestCase
         $fileResponse = $this->getJson('/api/v1/code/files/app/Helper.php');
 
         $fileResponse->assertStatus(200)
-            ->assertJsonPath('data.name', 'Helper.php')
-            ->assertJsonPath('data.path', 'app/Helper.php')
-            ->assertJsonPath('data.language', 'php')
-            ->assertJsonPath('data.content', '<?php echo "hello";')
-            ->assertJsonPath('data.linkedArticleSlug', 'article-code');
+            ->assertJsonPath('name', 'Helper.php')
+            ->assertJsonPath('path', 'app/Helper.php')
+            ->assertJsonPath('language', 'php')
+            ->assertJsonPath('content', '<?php echo "hello";')
+            ->assertJsonPath('linkedArticleSlug', 'article-code');
     }
 }

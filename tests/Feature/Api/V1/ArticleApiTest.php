@@ -63,11 +63,12 @@ final class ArticleApiTest extends TestCase
                         'title',
                         'slug',
                         'excerpt',
-                        'status',
-                        'reading_time',
-                        'featured',
-                        'published_at',
+                        'content',
                         'category',
+                        'tags',
+                        'publishedAt',
+                        'readingTime',
+                        'featured',
                     ]
                 ],
                 'total',
@@ -100,10 +101,10 @@ final class ArticleApiTest extends TestCase
         $response = $this->getJson('/api/v1/articles/mon-article');
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.title', 'Mon Article')
-            ->assertJsonPath('data.slug', 'mon-article')
-            ->assertJsonPath('data.category.label', 'Backend')
-            ->assertJsonPath('data.tags.0', 'Laravel');
+            ->assertJsonPath('title', 'Mon Article')
+            ->assertJsonPath('slug', 'mon-article')
+            ->assertJsonPath('category', 'backend')
+            ->assertJsonPath('tags.0', 'Laravel');
     }
 
     public function test_cannot_get_draft_article(): void

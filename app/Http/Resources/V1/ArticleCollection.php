@@ -9,6 +9,8 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 final class ArticleCollection extends ResourceCollection
 {
+    public static $wrap = null;
+
     public $collects = ArticleResource::class;
 
     /**
@@ -22,5 +24,13 @@ final class ArticleCollection extends ResourceCollection
             'page'     => $this->currentPage(),
             'pageSize' => $this->perPage(),
         ];
+    }
+
+    /**
+     * @param  \Illuminate\Http\Request  $request
+     */
+    public function toResponse($request): \Illuminate\Http\JsonResponse
+    {
+        return response()->json($this->toArray($request));
     }
 }

@@ -29,18 +29,16 @@ final class ProjectApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
-                    '*' => [
-                        'id',
-                        'slug',
-                        'title',
-                        'description',
-                        'longDescription',
-                        'techStack',
-                        'liveUrl',
-                        'repoUrl',
-                        'featured',
-                    ]
+                '*' => [
+                    'id',
+                    'slug',
+                    'title',
+                    'description',
+                    'longDescription',
+                    'techStack',
+                    'liveUrl',
+                    'repoUrl',
+                    'featured',
                 ]
             ]);
 
@@ -61,8 +59,8 @@ final class ProjectApiTest extends TestCase
         $response = $this->getJson('/api/v1/projects/project-beta');
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.title', 'Project Beta')
-            ->assertJsonPath('data.slug', 'project-beta')
-            ->assertJsonPath('data.techStack.0', 'Laravel');
+            ->assertJsonPath('title', 'Project Beta')
+            ->assertJsonPath('slug', 'project-beta')
+            ->assertJsonPath('techStack.0', 'Laravel');
     }
 }
