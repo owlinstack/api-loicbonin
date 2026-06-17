@@ -28,7 +28,7 @@ final class ArticleResource extends JsonResource
             'content' => $this->content,
             'category' => $this->category?->slug,
             'tags' => $this->tags->pluck('name')->all(),
-            'publishedAt' => $this->published_at?->toDateString(),
+            'publishedAt' => ($this->published_at ?? $this->created_at)?->toDateString(),
             'readingTime' => $this->reading_time,
             'featured' => $this->featured,
             'codeFile' => $this->codeFile ? new CodeFileResource($this->codeFile) : null,

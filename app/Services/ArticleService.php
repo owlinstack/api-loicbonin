@@ -23,7 +23,7 @@ final class ArticleService
     ): LengthAwarePaginator {
         return Article::query()
             ->where('status', ArticleStatus::Published)
-            ->where('published_at', '<=', now())
+            ->where(fn ($q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()))
             ->when($category, fn ($q, $cat) => $q->whereRelation('category', 'slug', $cat))
             ->when($tag, fn ($q, $t) => $q->whereRelation('tags', 'name', $t))
             ->with(['category', 'tags'])
