@@ -21,9 +21,11 @@ L'administration est configurée via [AdminCreatorPanelProvider.php](/api-loicbo
 
 ### 1. Articles (`ArticleResource`)
 
-- **Éditeur Markdown ergonomique** : Le champ `content` utilise le composant `MarkdownEditor` configuré à une hauteur confortable de `400px`, avec une barre d'outils complète incluant le mode plein écran, l'aperçu côte à côte, et l'insertion de fichiers médias.
-- **Création de Catégorie en Ligne** : Le sélecteur `category_id` intègre un bouton `+` (`createOptionForm`) permettant de créer une catégorie à la volée dans une fenêtre modale sans perdre la saisie de l'article.
-- **Liaison flexible de Code Source** : Une section dédiée permet de lier de manière exclusive à chaque article soit _Aucun_, soit un _Fichier de code seul_ (`code_file_id`), soit un _Dossier de code_ (`code_folder_id`), soit un _Projet de code_ complet (`code_project_id`). L'affichage des sélecteurs est conditionné dynamiquement par un champ réactif.
+- **Mise en page mono-colonne pleine largeur** : Le formulaire est structuré de manière entièrement séquentielle sur une seule colonne. Toutes les sections (`Contenu`, `Métadonnées`, `Code Source Associé`) et tous les champs internes s'affichent les uns en dessous des autres en occupant toute la largeur disponible pour maximiser l'espace d'édition.
+  - **Section "Contenu"** (avec icône `heroicon-o-document-text`) : Regroupe le titre, le slug, le résumé et l'éditeur markdown principal (`content`) configuré à une hauteur confortable de `400px`. Cet éditeur prend en charge le téléversement d'images (bouton d'attachement ou glisser-déposer), configuré pour enregistrer les fichiers sur le disque `public` (répertoire `attachments/`).
+  - **Section "Métadonnées"** (avec icône `heroicon-o-tag`) : Regroupe la catégorie, les tags multiples, le statut, le temps de lecture estimé, le commutateur de mise en avant et la date de publication.
+  - **Section "Code Source Associé"** (avec icône `heroicon-o-code-bracket`) : Regroupe le sélecteur réactif du type de liaison et les sélecteurs dynamiques de code (fichier, dossier, projet).
+- **Création en Ligne** : Permet de créer des catégories et des tags à la volée directement depuis les fenêtres modales intégrées aux sélecteurs sans interrompre la saisie.
 
 ### 2. Catégories (`CategoryResource`)
 
