@@ -6,50 +6,56 @@ Ce document présente l'architecture du panneau d'administration **AdminCreator*
 
 ## 🛡️ Le Panel AdminCreator
 
-L'administration est configurée via [AdminCreatorPanelProvider.php](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/api-loicbonin/app/Providers/Filament/AdminCreatorPanelProvider.php) et exposée sur l'adresse `/admin-creator`.
-* **Couleur du Design System** : Une couleur primaire personnalisée (`#01696f`, Teal) est appliquée pour correspondre à la charte graphique globale.
-* **Sécurité** : Connexion requise et gestion MFA prête à être activée en production.
-* **Typage strict** : La propriété `$navigationIcon` utilise le typage strict requis par Filament v5 :
-  ```php
-  protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user';
-  ```
+L'administration est configurée via [AdminCreatorPanelProvider.php](/api-loicbonin/app/Providers/Filament/AdminCreatorPanelProvider.php) et exposée sur l'adresse `/admin-creator`.
+
+- **Couleur du Design System** : Une couleur primaire personnalisée (`#01696f`, Teal) est appliquée pour correspondre à la charte graphique globale.
+- **Sécurité** : Connexion requise et gestion MFA prête à être activée en production.
+- **Typage strict** : La propriété `$navigationIcon` utilise le typage strict requis par Filament v5 :
+    ```php
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user';
+    ```
 
 ---
 
 ## 📦 Description des Ressources CRUD
 
 ### 1. Articles (`ArticleResource`)
-* **Éditeur Markdown ergonomique** : Le champ `content` utilise le composant `MarkdownEditor` configuré à une hauteur confortable de `400px`, avec une barre d'outils complète incluant le mode plein écran, l'aperçu côte à côte, et l'insertion de fichiers médias.
-* **Création de Catégorie en Ligne** : Le sélecteur `category_id` intègre un bouton `+` (`createOptionForm`) permettant de créer une catégorie à la volée dans une fenêtre modale sans perdre la saisie de l'article.
-* **Liaison flexible de Code Source** : Une section dédiée permet de lier de manière exclusive à chaque article soit *Aucun*, soit un *Fichier de code seul* (`code_file_id`), soit un *Dossier de code* (`code_folder_id`), soit un *Projet de code* complet (`code_project_id`). L'affichage des sélecteurs est conditionné dynamiquement par un champ réactif.
+
+- **Éditeur Markdown ergonomique** : Le champ `content` utilise le composant `MarkdownEditor` configuré à une hauteur confortable de `400px`, avec une barre d'outils complète incluant le mode plein écran, l'aperçu côte à côte, et l'insertion de fichiers médias.
+- **Création de Catégorie en Ligne** : Le sélecteur `category_id` intègre un bouton `+` (`createOptionForm`) permettant de créer une catégorie à la volée dans une fenêtre modale sans perdre la saisie de l'article.
+- **Liaison flexible de Code Source** : Une section dédiée permet de lier de manière exclusive à chaque article soit _Aucun_, soit un _Fichier de code seul_ (`code_file_id`), soit un _Dossier de code_ (`code_folder_id`), soit un _Projet de code_ complet (`code_project_id`). L'affichage des sélecteurs est conditionné dynamiquement par un champ réactif.
 
 ### 2. Catégories (`CategoryResource`)
-* Permet de créer, éditer et trier les catégories.
-* Affiche dans sa table principale un badge dynamique contenant le décompte d'articles associés (`articles_count`).
+
+- Permet de créer, éditer et trier les catégories.
+- Affiche dans sa table principale un badge dynamique contenant le décompte d'articles associés (`articles_count`).
 
 ### 3. Projets (`ProjectResource`)
-* Administre le portfolio de réalisations.
-* Utilise un composant `TagsInput` pour manipuler le tableau JSON `tech_stack` de manière visuelle et intuitive.
+
+- Administre le portfolio de réalisations.
+- Utilise un composant `TagsInput` pour manipuler le tableau JSON `tech_stack` de manière visuelle et intuitive.
 
 ### 4. Projets, Dossiers & Fichiers de Code (`CodeProjectResource`, `CodeFolderResource` et `CodeFileResource`)
+
 Permet de configurer l'explorateur de fichiers interactif et les projets de code associés aux articles :
-* **Projets Code (`CodeProjectResource`)** : Gère les regroupements de dossiers sous un projet de code unique (ex : Filament Core Project).
-* **Dossiers (`CodeFolderResource`)** : Permet de créer l'arborescence des dossiers et d'y lier un projet de code parent. Un script d'aide (`afterStateUpdated`) calcule automatiquement le chemin logique (`path`) du dossier en se basant sur le dossier parent sélectionné (ex : si `parent` est `app` et `name` est `Http`, le chemin devient `app/Http`).
-* **Fichiers (`CodeFileResource`)** : Éditeur de code brut configuré avec une typographie monospace sombre. La liaison avec un article a été retirée pour être pilotée directement et de manière centralisée par la fiche de l'Article.
+
+- **Projets Code (`CodeProjectResource`)** : Gère les regroupements de dossiers sous un projet de code unique (ex : Filament Core Project).
+- **Dossiers (`CodeFolderResource`)** : Permet de créer l'arborescence des dossiers et d'y lier un projet de code parent. Un script d'aide (`afterStateUpdated`) calcule automatiquement le chemin logique (`path`) du dossier en se basant sur le dossier parent sélectionné (ex : si `parent` est `app` et `name` est `Http`, le chemin devient `app/Http`).
+- **Fichiers (`CodeFileResource`)** : Éditeur de code brut configuré avec une typographie monospace sombre. La liaison avec un article a été retirée pour être pilotée directement et de manière centralisée par la fiche de l'Article.
 
 ---
 
 ## 👤 La Page Profil Unique (Settings UX)
 
-Pour éviter l'affichage d'un tableau de liste inadapté à un profil personnel unique, l'édition du profil s'effectue via une **Page de Paramètres** dédiée : [ManageProfile.php](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/api-loicbonin/app/Filament/Pages/ManageProfile.php).
+Pour éviter l'affichage d'un tableau de liste inadapté à un profil personnel unique, l'édition du profil s'effectue via une **Page de Paramètres** dédiée : [ManageProfile.php](/api-loicbonin/app/Filament/Pages/ManageProfile.php).
 
-* **Concept** : La page charge le premier enregistrement de la table `profiles` (ou le crée s'il est manquant) lors de sa phase de montage (`mount`).
-* **Repeaters interactifs** :
-  * Un composant `Repeater` permet de gérer de manière fluide et par glisser-déposer les compétences complexes (`skills`).
-  * Un composant `Repeater` gère la timeline professionnelle (`timeline`) comprenant les dates, intitulés de postes, et descriptions de tâches.
-  * Un composant `Repeater` gère le parcours académique et les formations (`education`) comprenant les dates, intitulés de diplômes, et descriptions.
-* **Téléversement de Médias** :
-  * **Photo de Profil (Avatar)** : Un composant `FileUpload` d'image (`image()`) stockant la photo de profil sous le dossier `storage/avatars/`.
-  * **CV PDF** : Un composant `FileUpload` restreint au type `application/pdf` stockant le fichier CV sous `storage/cvs/`.
-  * *Note* : Les deux champs utilisent `preserveFilenames()` pour conserver le nom d'origine des fichiers.
-* **Intégration Blade** : Le rendu s'effectue dans [manage-profile.blade.php](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/api-loicbonin/resources/views/filament/pages/manage-profile.blade.php) à l'aide des structures et boutons natifs de Filament.
+- **Concept** : La page charge le premier enregistrement de la table `profiles` (ou le crée s'il est manquant) lors de sa phase de montage (`mount`).
+- **Repeaters interactifs** :
+    - Un composant `Repeater` permet de gérer de manière fluide et par glisser-déposer les compétences complexes (`skills`).
+    - Un composant `Repeater` gère la timeline professionnelle (`timeline`) comprenant les dates, intitulés de postes, et descriptions de tâches.
+    - Un composant `Repeater` gère le parcours académique et les formations (`education`) comprenant les dates, intitulés de diplômes, et descriptions.
+- **Téléversement de Médias** :
+    - **Photo de Profil (Avatar)** : Un composant `FileUpload` d'image (`image()`) stockant la photo de profil sous le dossier `storage/avatars/`.
+    - **CV PDF** : Un composant `FileUpload` restreint au type `application/pdf` stockant le fichier CV sous `storage/cvs/`.
+    - _Note_ : Les deux champs utilisent `preserveFilenames()` pour conserver le nom d'origine des fichiers.
+- **Intégration Blade** : Le rendu s'effectue dans [manage-profile.blade.php](/api-loicbonin/resources/views/filament/pages/manage-profile.blade.php) à l'aide des structures et boutons natifs de Filament.

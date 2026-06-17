@@ -129,6 +129,8 @@ Renvoie la liste ou le détail des réalisations du portfolio (champs `title`, `
 * `/tags` : Retourne la liste à plat des tags uniques sous forme de tableau de chaînes.
 
 ### 5. Explorateur de Code Source
-* `/code/tree` : Retourne l'arborescence complète des dossiers et fichiers de code (JSON imbriqué récursif).
-* `/code/files/{path}` : Retourne le détail d'un fichier source unique (nom, langage, contenu de code brut) identifié par son chemin relatif (ex : `app/Http/Controllers/Api/V1/ProfileController.php`).
+* `GET /api/v1/code/projects` : Retourne la liste à plat des projets de code disponibles (id, name, slug, description).
+* `GET /api/v1/code/projects/{slug}/tree` : Retourne l'arborescence récursive complète des dossiers et fichiers pour le projet spécifié.
+* `GET /api/v1/code/files/{path}` : Retourne le détail d'un fichier source unique (nom, langage, contenu de code brut) identifié par son chemin (ex : `app/Providers/Filament/AdminCreatorPanelProvider.php`).
+* `GET /api/v1/code/tree` (Legacy) : Retourne l'arborescence globale des dossiers et fichiers de code à la racine.
 
