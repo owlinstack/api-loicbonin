@@ -6,6 +6,13 @@ namespace App\DTOs;
 
 use App\Enums\ArticleCategory;
 
+/**
+ * EXEMPLE (Non utilisé dans le projet)
+ *
+ * Ce DTO sert uniquement d'exemple de structure de transfert de données.
+ * Il n'est pas actif dans le projet car les transformations de modèles et la gestion
+ * des relations dynamiques sont confiées directement aux API Resources de Laravel (ArticleResource).
+ */
 final readonly class ArticleData
 {
     /**
@@ -22,5 +29,7 @@ final readonly class ArticleData
         public string $publishedAt,
         public int $readingTime,
         public bool $featured = false,
-    ) {}
+    ) {
+        //
+    }
 }

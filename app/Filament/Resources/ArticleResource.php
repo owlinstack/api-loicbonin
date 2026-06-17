@@ -28,9 +28,7 @@ final class ArticleResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->columns(1)
-            ->schema([
+        return $schema->columns(1)->schema([
             Section::make('Contenu')
                 ->icon('heroicon-o-document-text')
                 ->columns(1)
