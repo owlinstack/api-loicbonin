@@ -6,6 +6,9 @@ Thumbs.db
 # --- Environnement (Sécurisation maximale) ---
 # Ignore tous les fichiers .env et leurs déclinaisons (.env.local, .env.backup, .env.prod.tmp, etc.)
 .env*
+.env
+.env.backup
+.env.production
 # Autorise uniquement le template d'exemple non sensible
 !.env.example
 
@@ -33,7 +36,6 @@ Thumbs.db
 /.larastan-tmp
 
 # --- IDEs & Éditeurs ---
-/.cursor/
 /.idea
 /.vscode
 /.nova
