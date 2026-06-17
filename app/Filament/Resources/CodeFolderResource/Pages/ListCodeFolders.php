@@ -8,7 +8,7 @@ use App\Filament\Resources\CodeFolderResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListCodeFolders extends ListRecords
+final class ListCodeFolders extends ListRecords
 {
     protected static string $resource = CodeFolderResource::class;
 

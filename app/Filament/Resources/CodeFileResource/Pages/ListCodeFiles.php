@@ -8,7 +8,7 @@ use App\Filament\Resources\CodeFileResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListCodeFiles extends ListRecords
+final class ListCodeFiles extends ListRecords
 {
     protected static string $resource = CodeFileResource::class;
 

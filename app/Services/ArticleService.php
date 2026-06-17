@@ -12,7 +12,7 @@ final class ArticleService
     /**
      * Retourne les articles publiés, filtrés et paginés.
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, Article>
+     * @return LengthAwarePaginator<int, Article>
      */
     public function listPublished(
         ?string $category = null,

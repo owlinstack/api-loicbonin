@@ -5,25 +5,29 @@ declare(strict_types=1);
 namespace App\Filament\Pages;
 
 use App\Models\Profile;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Schemas\Schema;
-use Filament\Pages\Page;
-use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Filament\Schemas\Schema;
 
-class ManageProfile extends Page implements HasForms
+final class ManageProfile extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user';
+
     protected static ?string $navigationLabel = 'Mon Profil';
+
     protected static ?string $title = 'Gérer le Profil';
+
     protected string $view = 'filament.pages.manage-profile';
+
     protected static ?int $navigationSort = 6;
 
     public ?array $data = [];
@@ -32,7 +36,7 @@ class ManageProfile extends Page implements HasForms
     {
         $profile = Profile::first() ?? Profile::create([
             'name' => 'Loïc Bonin',
-            'bio' => "Développeur full-stack basé à Paris.",
+            'bio' => 'Développeur full-stack basé à Paris.',
             'skills' => [],
             'timeline' => [],
         ]);

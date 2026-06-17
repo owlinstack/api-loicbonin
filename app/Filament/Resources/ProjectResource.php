@@ -6,20 +6,23 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Models\Project;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
 final class ProjectResource extends Resource
 {
     protected static ?string $model = Project::class;
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-folder';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
+
     protected static ?string $navigationLabel = 'Projets';
+
     protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
@@ -32,8 +35,7 @@ final class ProjectResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn ($state, $set) =>
-                            $set('slug', str($state)->slug()->toString())
+                        ->afterStateUpdated(fn ($state, $set) => $set('slug', str($state)->slug()->toString())
                         ),
                     Forms\Components\TextInput::make('slug')
                         ->required()
@@ -99,9 +101,9 @@ final class ProjectResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListProjects::route('/'),
+            'index' => Pages\ListProjects::route('/'),
             'create' => Pages\CreateProject::route('/create'),
-            'edit'   => Pages\EditProject::route('/{record}/edit'),
+            'edit' => Pages\EditProject::route('/{record}/edit'),
         ];
     }
 }

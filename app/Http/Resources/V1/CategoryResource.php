@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V1;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property \App\Models\Category $resource
+ * @property Category $resource
  */
-class CategoryResource extends JsonResource
+final class CategoryResource extends JsonResource
 {
     /**
      * @return array<string, mixed>

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Category extends Model
+final class Category extends Model
 {
     use HasUlids;
 
@@ -18,7 +18,7 @@ class Category extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Article, $this>
+     * @return HasMany<Article, $this>
      */
     public function articles(): HasMany
     {

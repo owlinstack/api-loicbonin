@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Article extends Model
+final class Article extends Model
 {
     use HasUlids;
 
@@ -35,7 +35,7 @@ class Article extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Category, $this>
+     * @return BelongsTo<Category, $this>
      */
     public function category(): BelongsTo
     {
@@ -43,7 +43,7 @@ class Article extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Tag, $this>
+     * @return BelongsToMany<Tag, $this>
      */
     public function tags(): BelongsToMany
     {
@@ -51,7 +51,7 @@ class Article extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CodeFile, $this>
+     * @return HasMany<CodeFile, $this>
      */
     public function codeFiles(): HasMany
     {

@@ -7,20 +7,23 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CodeFileResource\Pages;
 use App\Models\CodeFile;
 use App\Models\CodeFolder;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
 final class CodeFileResource extends Resource
 {
     protected static ?string $model = CodeFile::class;
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document';
+
     protected static ?string $navigationLabel = 'Fichiers Code';
+
     protected static ?int $navigationSort = 5;
 
     public static function form(Schema $schema): Schema
@@ -34,12 +37,13 @@ final class CodeFileResource extends Resource
                         ->maxLength(255)
                         ->placeholder('ex: ArticleController.php')
                         ->live(onBlur: true)
-                        ->afterStateUpdated(function ($state, $get, $set) {
+                        ->afterStateUpdated(function ($state, $get, $set): void {
                             $folderId = $get('folder_id');
                             if ($folderId) {
                                 $folder = CodeFolder::find($folderId);
                                 if ($folder) {
-                                    $set('path', rtrim($folder->path, '/') . '/' . ltrim($state, '/'));
+                                    $set('path', rtrim($folder->path, '/').'/'.ltrim($state, '/'));
+
                                     return;
                                 }
                             }
@@ -92,7 +96,7 @@ final class CodeFileResource extends Resource
                         ->rows(20)
                         ->placeholder('Saisissez ou collez votre code ici...')
                         ->extraInputAttributes([
-                            'class' => 'font-mono text-xs md:text-sm leading-relaxed bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 rounded-lg p-4'
+                            'class' => 'font-mono text-xs md:text-sm leading-relaxed bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 rounded-lg p-4',
                         ]),
                 ]),
         ]);
@@ -134,9 +138,9 @@ final class CodeFileResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListCodeFiles::route('/'),
+            'index' => Pages\ListCodeFiles::route('/'),
             'create' => Pages\CreateCodeFile::route('/create'),
-            'edit'   => Pages\EditCodeFile::route('/{record}/edit'),
+            'edit' => Pages\EditCodeFile::route('/{record}/edit'),
         ];
     }
 }

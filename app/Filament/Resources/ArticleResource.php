@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\ArticleStatus;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
-use App\Enums\ArticleStatus;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
 final class ArticleResource extends Resource
 {
     protected static ?string $model = Article::class;
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+
     protected static ?string $navigationLabel = 'Articles';
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
@@ -33,8 +36,7 @@ final class ArticleResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn ($state, $set) =>
-                            $set('slug', str($state)->slug()->toString())
+                        ->afterStateUpdated(fn ($state, $set) => $set('slug', str($state)->slug()->toString())
                         ),
                     Forms\Components\TextInput::make('slug')
                         ->required()
@@ -78,8 +80,7 @@ final class ArticleResource extends Resource
                                 ->required()
                                 ->maxLength(255)
                                 ->live(onBlur: true)
-                                ->afterStateUpdated(fn ($state, $set) =>
-                                    $set('slug', str($state)->slug()->toString())
+                                ->afterStateUpdated(fn ($state, $set) => $set('slug', str($state)->slug()->toString())
                                 ),
                             Forms\Components\TextInput::make('slug')
                                 ->required()
@@ -124,8 +125,8 @@ final class ArticleResource extends Resource
                     ->badge()
                     ->color(fn (ArticleStatus $state) => match ($state) {
                         ArticleStatus::Published => 'success',
-                        ArticleStatus::Draft     => 'warning',
-                        ArticleStatus::Archived  => 'gray',
+                        ArticleStatus::Draft => 'warning',
+                        ArticleStatus::Archived => 'gray',
                     }),
                 Tables\Columns\IconColumn::make('featured')
                     ->boolean(),
@@ -151,9 +152,9 @@ final class ArticleResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListArticles::route('/'),
+            'index' => Pages\ListArticles::route('/'),
             'create' => Pages\CreateArticle::route('/create'),
-            'edit'   => Pages\EditArticle::route('/{record}/edit'),
+            'edit' => Pages\EditArticle::route('/{record}/edit'),
         ];
     }
 }

@@ -10,7 +10,7 @@ use App\Models\CodeFile;
 use App\Models\CodeFolder;
 use Illuminate\Http\JsonResponse;
 
-class CodeController extends Controller
+final class CodeController extends Controller
 {
     public function tree(): JsonResponse
     {
@@ -20,7 +20,7 @@ class CodeController extends Controller
         $rootFolders = CodeFolder::whereNull('parent_id')
             ->orderBy('sort_order')
             ->get();
-            
+
         $rootFiles = CodeFile::whereNull('folder_id')
             ->orderBy('sort_order')
             ->get();
@@ -36,7 +36,7 @@ class CodeController extends Controller
                     ->orderBy('sort_order')
                     ->get();
 
-                $mappedFiles = $files->map(fn(CodeFile $f) => [
+                $mappedFiles = $files->map(fn (CodeFile $f) => [
                     'name' => $f->name,
                     'path' => $f->path,
                     'language' => $f->language,
@@ -54,12 +54,13 @@ class CodeController extends Controller
                     ),
                 ];
             }
+
             return $tree;
         };
 
         $treeData = array_merge(
             $buildTree($rootFolders),
-            $rootFiles->map(fn(CodeFile $f) => [
+            $rootFiles->map(fn (CodeFile $f) => [
                 'name' => $f->name,
                 'path' => $f->path,
                 'language' => $f->language,

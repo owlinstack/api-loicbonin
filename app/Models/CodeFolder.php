@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class CodeFolder extends Model
+final class CodeFolder extends Model
 {
     use HasUlids;
 
@@ -25,7 +25,7 @@ class CodeFolder extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<CodeFolder, $this>
+     * @return BelongsTo<CodeFolder, $this>
      */
     public function parent(): BelongsTo
     {
@@ -33,7 +33,7 @@ class CodeFolder extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CodeFolder, $this>
+     * @return HasMany<CodeFolder, $this>
      */
     public function children(): HasMany
     {
@@ -41,7 +41,7 @@ class CodeFolder extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CodeFile, $this>
+     * @return HasMany<CodeFile, $this>
      */
     public function files(): HasMany
     {

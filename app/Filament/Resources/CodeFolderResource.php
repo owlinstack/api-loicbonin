@@ -6,20 +6,23 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CodeFolderResource\Pages;
 use App\Models\CodeFolder;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
 final class CodeFolderResource extends Resource
 {
     protected static ?string $model = CodeFolder::class;
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-folder-open';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder-open';
+
     protected static ?string $navigationLabel = 'Dossiers Code';
+
     protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
@@ -33,13 +36,14 @@ final class CodeFolderResource extends Resource
                         ->maxLength(255)
                         ->placeholder('ex: app, Http, Controllers')
                         ->live(onBlur: true)
-                        ->afterStateUpdated(function ($state, $get, $set) {
+                        ->afterStateUpdated(function ($state, $get, $set): void {
                             // Si parent_id est défini, on peut pré-remplir le chemin avec le chemin parent
                             $parentId = $get('parent_id');
                             if ($parentId) {
                                 $parent = CodeFolder::find($parentId);
                                 if ($parent) {
-                                    $set('path', rtrim($parent->path, '/') . '/' . ltrim($state, '/'));
+                                    $set('path', rtrim($parent->path, '/').'/'.ltrim($state, '/'));
+
                                     return;
                                 }
                             }
@@ -98,9 +102,9 @@ final class CodeFolderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListCodeFolders::route('/'),
+            'index' => Pages\ListCodeFolders::route('/'),
             'create' => Pages\CreateCodeFolder::route('/create'),
-            'edit'   => Pages\EditCodeFolder::route('/{record}/edit'),
+            'edit' => Pages\EditCodeFolder::route('/{record}/edit'),
         ];
     }
 }

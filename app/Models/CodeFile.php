@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class CodeFile extends Model
+final class CodeFile extends Model
 {
     use HasUlids;
 
@@ -27,7 +27,7 @@ class CodeFile extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<CodeFolder, $this>
+     * @return BelongsTo<CodeFolder, $this>
      */
     public function folder(): BelongsTo
     {
@@ -35,7 +35,7 @@ class CodeFile extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Article, $this>
+     * @return BelongsTo<Article, $this>
      */
     public function linkedArticle(): BelongsTo
     {

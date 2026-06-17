@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1;
 
-use App\Models\Category;
-use App\Models\Tag;
-use App\Models\Article;
-use App\Models\CodeFolder;
-use App\Models\CodeFile;
 use App\Enums\ArticleStatus;
+use App\Models\Article;
+use App\Models\Category;
+use App\Models\CodeFile;
+use App\Models\CodeFolder;
+use App\Models\Profile;
+use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -30,7 +31,7 @@ final class GeneralApiTest extends TestCase
                     'slug',
                     'label',
                     'count',
-                ]
+                ],
             ]);
 
         $response->assertJsonFragment(['slug' => 'react']);
@@ -49,14 +50,14 @@ final class GeneralApiTest extends TestCase
 
     public function test_can_get_profile(): void
     {
-        \App\Models\Profile::create([
+        Profile::create([
             'name' => 'Loïc de Test',
             'bio' => 'Ma Bio de test',
             'skills' => [
-                ['term' => 'HTML', 'description' => 'Super Skill']
+                ['term' => 'HTML', 'description' => 'Super Skill'],
             ],
             'timeline' => [
-                ['date' => '2026', 'title' => 'Test Job', 'description' => 'Job description']
+                ['date' => '2026', 'title' => 'Test Job', 'description' => 'Job description'],
             ],
             'cv_url' => 'cvs/test-cv.pdf',
         ]);
@@ -71,14 +72,14 @@ final class GeneralApiTest extends TestCase
                     '*' => [
                         'term',
                         'description',
-                    ]
+                    ],
                 ],
                 'timeline' => [
                     '*' => [
                         'date',
                         'title',
                         'description',
-                    ]
+                    ],
                 ],
                 'cvUrl',
             ])

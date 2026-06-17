@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Providers\AppServiceProvider;
+use App\Providers\Filament\AdminCreatorPanelProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\Filament\AdminCreatorPanelProvider::class,
+    AppServiceProvider::class,
+    AdminCreatorPanelProvider::class,
 ];

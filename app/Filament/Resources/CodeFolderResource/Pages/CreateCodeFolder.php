@@ -7,7 +7,7 @@ namespace App\Filament\Resources\CodeFolderResource\Pages;
 use App\Filament\Resources\CodeFolderResource;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateCodeFolder extends CreateRecord
+final class CreateCodeFolder extends CreateRecord
 {
     protected static string $resource = CodeFolderResource::class;
 }

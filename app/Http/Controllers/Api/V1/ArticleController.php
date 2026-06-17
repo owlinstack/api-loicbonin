@@ -22,8 +22,8 @@ final class ArticleController extends Controller
     {
         $paginated = $this->articleService->listPublished(
             category: $request->query('category'),
-            tag:      $request->query('tag'),
-            page:     (int) $request->query('page', '1'),
+            tag: $request->query('tag'),
+            page: (int) $request->query('page', '1'),
             pageSize: (int) $request->query('pageSize', '10'),
         );
 

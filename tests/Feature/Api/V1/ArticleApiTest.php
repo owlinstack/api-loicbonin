@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1;
 
+use App\Enums\ArticleStatus;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
-use App\Enums\ArticleStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -69,7 +69,7 @@ final class ArticleApiTest extends TestCase
                         'publishedAt',
                         'readingTime',
                         'featured',
-                    ]
+                    ],
                 ],
                 'total',
                 'page',

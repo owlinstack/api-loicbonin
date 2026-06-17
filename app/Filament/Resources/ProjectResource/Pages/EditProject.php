@@ -8,7 +8,7 @@ use App\Filament\Resources\ProjectResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditProject extends EditRecord
+final class EditProject extends EditRecord
 {
     protected static string $resource = ProjectResource::class;
 

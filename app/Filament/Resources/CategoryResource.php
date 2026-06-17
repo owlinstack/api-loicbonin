@@ -6,20 +6,23 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoryResource\Pages;
 use App\Models\Category;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
 final class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-tag';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
+
     protected static ?string $navigationLabel = 'Catégories';
+
     protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
@@ -32,8 +35,7 @@ final class CategoryResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn ($state, $set) =>
-                            $set('slug', str($state)->slug()->toString())
+                        ->afterStateUpdated(fn ($state, $set) => $set('slug', str($state)->slug()->toString())
                         ),
                     Forms\Components\TextInput::make('slug')
                         ->required()
@@ -70,9 +72,9 @@ final class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListCategories::route('/'),
+            'index' => Pages\ListCategories::route('/'),
             'create' => Pages\CreateCategory::route('/create'),
-            'edit'   => Pages\EditCategory::route('/{record}/edit'),
+            'edit' => Pages\EditCategory::route('/{record}/edit'),
         ];
     }
 }

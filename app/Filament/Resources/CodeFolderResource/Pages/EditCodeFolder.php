@@ -8,7 +8,7 @@ use App\Filament\Resources\CodeFolderResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditCodeFolder extends EditRecord
+final class EditCodeFolder extends EditRecord
 {
     protected static string $resource = CodeFolderResource::class;
 

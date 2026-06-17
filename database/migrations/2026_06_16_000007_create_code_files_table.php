@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -8,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('code_files', function (Blueprint $table) {
+        Schema::create('code_files', function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->string('name');
             $table->string('path')->unique();
@@ -16,7 +18,7 @@ return new class extends Migration
             $table->longText('content');
             $table->foreignUlid('folder_id')->constrained('code_folders')->cascadeOnDelete();
             $table->foreignUlid('linked_article_id')->nullable()
-                  ->constrained('articles')->nullOnDelete();
+                ->constrained('articles')->nullOnDelete();
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
         });

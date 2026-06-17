@@ -9,7 +9,7 @@ use App\Http\Resources\V1\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ProjectController extends Controller
+final class ProjectController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {

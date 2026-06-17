@@ -39,7 +39,7 @@ final class ProjectApiTest extends TestCase
                     'liveUrl',
                     'repoUrl',
                     'featured',
-                ]
+                ],
             ]);
 
         $response->assertJsonFragment(['slug' => 'project-alpha']);

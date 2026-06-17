@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Category;
-use App\Models\Tag;
-use App\Models\Project;
-use App\Models\Article;
-use App\Models\CodeFolder;
-use App\Models\CodeFile;
 use App\Enums\ArticleStatus;
+use App\Models\Article;
+use App\Models\Category;
+use App\Models\CodeFile;
+use App\Models\CodeFolder;
+use App\Models\Profile;
+use App\Models\Project;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-class DatabaseSeeder extends Seeder
+final class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
@@ -32,10 +33,10 @@ class DatabaseSeeder extends Seeder
         );
 
         // 1.5 Profile
-        \App\Models\Profile::firstOrCreate(
+        Profile::firstOrCreate(
             ['name' => 'Loïc Bonin'],
             [
-                'bio' => "Développeur full-stack basé à Paris. Je construis des interfaces de lecture, des outils pour équipes éditoriales et des systèmes de synchronisation de données. Passionné par la typographie, les standards du web et les DX raisonnables.",
+                'bio' => 'Développeur full-stack basé à Paris. Je construis des interfaces de lecture, des outils pour équipes éditoriales et des systèmes de synchronisation de données. Passionné par la typographie, les standards du web et les DX raisonnables.',
                 'skills' => [
                     [
                         'term' => 'Frontend',
@@ -43,7 +44,7 @@ class DatabaseSeeder extends Seeder
                     ],
                     [
                         'term' => 'Backend',
-                        'description' => "Node.js, Drizzle ORM, PostgreSQL (Neon), Cloudflare Workers. Architecture orientée data pipelines plutôt que microservices.",
+                        'description' => 'Node.js, Drizzle ORM, PostgreSQL (Neon), Cloudflare Workers. Architecture orientée data pipelines plutôt que microservices.',
                     ],
                     [
                         'term' => 'Outillage',
@@ -51,8 +52,8 @@ class DatabaseSeeder extends Seeder
                     ],
                     [
                         'term' => 'Veille',
-                        'description' => "Suivi régulier des RFC TC39, WICG et CSSWG. Lecture de spécifications en source primaire plutôt que de résumés.",
-                    ]
+                        'description' => 'Suivi régulier des RFC TC39, WICG et CSSWG. Lecture de spécifications en source primaire plutôt que de résumés.',
+                    ],
                 ],
                 'timeline' => [
                     [
@@ -63,18 +64,18 @@ class DatabaseSeeder extends Seeder
                     [
                         'date' => '2022 — 2024',
                         'title' => 'Lead Frontend, Contentsquare',
-                        'description' => "Refonte du design system, migration vers App Router, réduction de 40% du bundle JS.",
+                        'description' => 'Refonte du design system, migration vers App Router, réduction de 40% du bundle JS.',
                     ],
                     [
                         'date' => '2019 — 2022',
                         'title' => 'Développeur Full-stack, Alan',
-                        'description' => "Interfaces patient et back-office médical. First employee engineering.",
+                        'description' => 'Interfaces patient et back-office médical. First employee engineering.',
                     ],
                     [
                         'date' => '2017 — 2019',
                         'title' => 'Master Informatique, EPITA',
-                        'description' => "Spécialisation systèmes et réseaux.",
-                    ]
+                        'description' => 'Spécialisation systèmes et réseaux.',
+                    ],
                 ],
                 'cv_url' => null,
             ]
@@ -82,11 +83,11 @@ class DatabaseSeeder extends Seeder
 
         // 2. Categories
         $categoriesData = [
-            'react'      => 'React',
+            'react' => 'React',
             'typescript' => 'TypeScript',
-            'css'        => 'CSS',
-            'backend'    => 'Backend',
-            'tooling'    => 'Tooling',
+            'css' => 'CSS',
+            'backend' => 'Backend',
+            'tooling' => 'Tooling',
         ];
 
         $categories = [];

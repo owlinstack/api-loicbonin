@@ -8,7 +8,7 @@ use App\Filament\Resources\CodeFileResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditCodeFile extends EditRecord
+final class EditCodeFile extends EditRecord
 {
     protected static string $resource = CodeFileResource::class;
 
