@@ -14,6 +14,8 @@ final class ArticleResource extends JsonResource
 {
     /**
      * Correspond à l'interface TypeScript `Article`.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
@@ -23,9 +25,9 @@ final class ArticleResource extends JsonResource
             'title' => $this->title,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
-            'category' => $this->category->slug,
+            'category' => $this->category?->slug,
             'tags' => $this->tags->pluck('name')->all(),
-            'publishedAt' => $this->published_at->toDateString(),
+            'publishedAt' => $this->published_at?->toDateString(),
             'readingTime' => $this->reading_time,
             'featured' => $this->featured,
         ];

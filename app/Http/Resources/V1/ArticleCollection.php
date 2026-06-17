@@ -15,14 +15,19 @@ final class ArticleCollection extends ResourceCollection
 
     /**
      * Correspond à l'interface TypeScript `PaginatedArticles`.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
+        /** @var \Illuminate\Pagination\LengthAwarePaginator<int, \App\Models\Article> $paginator */
+        $paginator = $this->resource;
+
         return [
             'articles' => $this->collection,
-            'total'    => $this->total(),
-            'page'     => $this->currentPage(),
-            'pageSize' => $this->perPage(),
+            'total'    => $paginator->total(),
+            'page'     => $paginator->currentPage(),
+            'pageSize' => $paginator->perPage(),
         ];
     }
 

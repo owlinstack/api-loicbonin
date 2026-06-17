@@ -17,6 +17,9 @@ class Category extends Model
         'label',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Article, $this>
+     */
     public function articles(): HasMany
     {
         return $this->hasMany(Article::class);

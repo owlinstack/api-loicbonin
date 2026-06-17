@@ -24,16 +24,25 @@ class CodeFolder extends Model
         'sort_order' => 'integer',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<CodeFolder, $this>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(CodeFolder::class, 'parent_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CodeFolder, $this>
+     */
     public function children(): HasMany
     {
         return $this->hasMany(CodeFolder::class, 'parent_id')->orderBy('sort_order');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CodeFile, $this>
+     */
     public function files(): HasMany
     {
         return $this->hasMany(CodeFile::class, 'folder_id')->orderBy('sort_order');

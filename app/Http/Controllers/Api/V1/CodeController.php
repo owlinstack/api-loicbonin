@@ -36,7 +36,7 @@ class CodeController extends Controller
                     ->orderBy('sort_order')
                     ->get();
 
-                $mappedFiles = $files->map(fn($f) => [
+                $mappedFiles = $files->map(fn(CodeFile $f) => [
                     'name' => $f->name,
                     'path' => $f->path,
                     'language' => $f->language,
@@ -59,7 +59,7 @@ class CodeController extends Controller
 
         $treeData = array_merge(
             $buildTree($rootFolders),
-            $rootFiles->map(fn($f) => [
+            $rootFiles->map(fn(CodeFile $f) => [
                 'name' => $f->name,
                 'path' => $f->path,
                 'language' => $f->language,

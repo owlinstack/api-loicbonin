@@ -34,16 +34,25 @@ class Article extends Model
         'reading_time' => 'integer',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Category, $this>
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Tag, $this>
+     */
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CodeFile, $this>
+     */
     public function codeFiles(): HasMany
     {
         return $this->hasMany(CodeFile::class, 'linked_article_id');

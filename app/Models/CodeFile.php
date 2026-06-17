@@ -26,11 +26,17 @@ class CodeFile extends Model
         'sort_order' => 'integer',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<CodeFolder, $this>
+     */
     public function folder(): BelongsTo
     {
         return $this->belongsTo(CodeFolder::class, 'folder_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Article, $this>
+     */
     public function linkedArticle(): BelongsTo
     {
         return $this->belongsTo(Article::class, 'linked_article_id');
