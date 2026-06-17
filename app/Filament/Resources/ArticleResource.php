@@ -28,9 +28,12 @@ final class ArticleResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('Contenu')
-                ->columns(2)
+                ->icon('heroicon-o-document-text')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('title')
                         ->required()
@@ -44,13 +47,13 @@ final class ArticleResource extends Resource
                         ->maxLength(255),
                     Forms\Components\Textarea::make('excerpt')
                         ->required()
-                        ->rows(3)
-                        ->columnSpanFull(),
+                        ->rows(3),
                     Forms\Components\MarkdownEditor::make('content')
                         ->required()
-                        ->columnSpanFull()
                         ->minHeight('400px')
                         ->placeholder('Rédigez le contenu de votre article ici au format Markdown...')
+                        ->fileAttachmentsDisk('public')
+                        ->fileAttachmentsDirectory('attachments')
                         ->toolbarButtons([
                             'attachFiles',
                             'blockquote',
@@ -68,7 +71,8 @@ final class ArticleResource extends Resource
                 ]),
 
             Section::make('Métadonnées')
-                ->columns(3)
+                ->icon('heroicon-o-tag')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Select::make('category_id')
                         ->relationship('category', 'label')
@@ -110,7 +114,8 @@ final class ArticleResource extends Resource
                 ]),
 
             Section::make('Code Source Associé')
-                ->columns(2)
+                ->icon('heroicon-o-code-bracket')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Select::make('code_type')
                         ->label('Type de liaison')
