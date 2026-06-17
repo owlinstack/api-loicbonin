@@ -7,6 +7,9 @@ namespace Tests\Feature\Api\V1;
 use App\Enums\ArticleStatus;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\CodeFile;
+use App\Models\CodeFolder;
+use App\Models\CodeProject;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -199,5 +202,128 @@ final class ArticleApiTest extends TestCase
         $response = $this->getJson('/api/v1/articles/brouillon');
 
         $response->assertStatus(404);
+    }
+
+    public function test_article_returns_code_file_relationship(): void
+    {
+        $folder = CodeFolder::create([
+            'name' => 'app',
+            'path' => 'app',
+        ]);
+
+        $file = CodeFile::create([
+            'name' => 'test.php',
+            'path' => 'app/test.php',
+            'language' => 'php',
+            'content' => '<?php echo "hello";',
+            'folder_id' => $folder->id,
+        ]);
+
+        $article = Article::create([
+            'title' => 'Article with File',
+            'slug' => 'article-with-file',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 5,
+            'published_at' => now()->subDay(),
+            'code_file_id' => $file->id,
+        ]);
+
+        $response = $this->getJson('/api/v1/articles/article-with-file');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('codeFile.name', 'test.php')
+            ->assertJsonPath('codeFile.path', 'app/test.php')
+            ->assertJsonPath('codeFolder', null)
+            ->assertJsonPath('codeProject', null);
+    }
+
+    public function test_article_returns_code_folder_tree_relationship(): void
+    {
+        $parentFolder = CodeFolder::create([
+            'name' => 'app',
+            'path' => 'app',
+        ]);
+
+        $childFolder = CodeFolder::create([
+            'name' => 'Http',
+            'path' => 'app/Http',
+            'parent_id' => $parentFolder->id,
+        ]);
+
+        CodeFile::create([
+            'name' => 'Kernel.php',
+            'path' => 'app/Http/Kernel.php',
+            'language' => 'php',
+            'content' => 'class Kernel {}',
+            'folder_id' => $childFolder->id,
+        ]);
+
+        $article = Article::create([
+            'title' => 'Article with Folder',
+            'slug' => 'article-with-folder',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 5,
+            'published_at' => now()->subDay(),
+            'code_folder_id' => $parentFolder->id,
+        ]);
+
+        $response = $this->getJson('/api/v1/articles/article-with-folder');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('codeFile', null)
+            ->assertJsonPath('codeFolder.name', 'app')
+            ->assertJsonPath('codeFolder.children.0.name', 'Http')
+            ->assertJsonPath('codeFolder.children.0.children.0.name', 'Kernel.php')
+            ->assertJsonPath('codeProject', null);
+    }
+
+    public function test_article_returns_code_project_tree_relationship(): void
+    {
+        $project = CodeProject::create([
+            'name' => 'My Project',
+            'slug' => 'my-project',
+            'description' => 'A test project',
+        ]);
+
+        $folder = CodeFolder::create([
+            'name' => 'app',
+            'path' => 'app',
+            'code_project_id' => $project->id,
+        ]);
+
+        CodeFile::create([
+            'name' => 'index.php',
+            'path' => 'app/index.php',
+            'language' => 'php',
+            'content' => 'echo "hello";',
+            'folder_id' => $folder->id,
+        ]);
+
+        $article = Article::create([
+            'title' => 'Article with Project',
+            'slug' => 'article-with-project',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 5,
+            'published_at' => now()->subDay(),
+            'code_project_id' => $project->id,
+        ]);
+
+        $response = $this->getJson('/api/v1/articles/article-with-project');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('codeFile', null)
+            ->assertJsonPath('codeFolder', null)
+            ->assertJsonPath('codeProject.name', 'My Project')
+            ->assertJsonPath('codeProject.tree.0.name', 'app')
+            ->assertJsonPath('codeProject.tree.0.children.0.name', 'index.php');
     }
 }

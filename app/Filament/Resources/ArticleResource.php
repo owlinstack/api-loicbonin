@@ -108,6 +108,60 @@ final class ArticleResource extends Resource
                     Forms\Components\DateTimePicker::make('published_at')
                         ->label('Date de publication'),
                 ]),
+
+            Section::make('Code Source Associé')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Select::make('code_type')
+                        ->label('Type de liaison')
+                        ->options([
+                            'none' => 'Aucun',
+                            'file' => 'Fichier de code seul',
+                            'folder' => 'Dossier de code',
+                            'project' => 'Projet de code',
+                        ])
+                        ->default('none')
+                        ->reactive()
+                        ->afterStateHydrated(function ($set, $record): void {
+                            if ($record) {
+                                if ($record->code_file_id) {
+                                    $set('code_type', 'file');
+                                } elseif ($record->code_folder_id) {
+                                    $set('code_type', 'folder');
+                                } elseif ($record->code_project_id) {
+                                    $set('code_type', 'project');
+                                } else {
+                                    $set('code_type', 'none');
+                                }
+                            }
+                        })
+                        ->afterStateUpdated(function ($state, $set): void {
+                            $set('code_file_id', null);
+                            $set('code_folder_id', null);
+                            $set('code_project_id', null);
+                        }),
+                    Forms\Components\Select::make('code_file_id')
+                        ->label('Fichier de code')
+                        ->relationship('codeFile', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->visible(fn ($get) => $get('code_type') === 'file')
+                        ->required(fn ($get) => $get('code_type') === 'file'),
+                    Forms\Components\Select::make('code_folder_id')
+                        ->label('Dossier de code')
+                        ->relationship('codeFolder', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->visible(fn ($get) => $get('code_type') === 'folder')
+                        ->required(fn ($get) => $get('code_type') === 'folder'),
+                    Forms\Components\Select::make('code_project_id')
+                        ->label('Projet de code')
+                        ->relationship('codeProject', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->visible(fn ($get) => $get('code_type') === 'project')
+                        ->required(fn ($get) => $get('code_type') === 'project'),
+                ]),
         ]);
     }
 

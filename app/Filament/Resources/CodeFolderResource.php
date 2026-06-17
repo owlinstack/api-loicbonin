@@ -60,6 +60,11 @@ final class CodeFolderResource extends Resource
                         ->preload()
                         ->label('Dossier Parent')
                         ->live(),
+                    Forms\Components\Select::make('code_project_id')
+                        ->relationship('codeProject', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->label('Projet de Code'),
                     Forms\Components\TextInput::make('sort_order')
                         ->numeric()
                         ->default(0)
@@ -81,6 +86,9 @@ final class CodeFolderResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('parent.name')
                     ->label('Dossier Parent')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('codeProject.name')
+                    ->label('Projet de Code')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sort_order')
                     ->sortable()

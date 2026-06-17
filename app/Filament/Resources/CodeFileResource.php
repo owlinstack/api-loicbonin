@@ -76,11 +76,6 @@ final class CodeFileResource extends Resource
                         ->label('Dossier Parent')
                         ->required()
                         ->live(),
-                    Forms\Components\Select::make('linked_article_id')
-                        ->relationship('linkedArticle', 'title')
-                        ->searchable()
-                        ->preload()
-                        ->label('Article Associé'),
                     Forms\Components\TextInput::make('sort_order')
                         ->numeric()
                         ->default(0)

@@ -115,9 +115,10 @@ final class GeneralApiTest extends TestCase
             'language' => 'php',
             'content' => '<?php echo "hello";',
             'folder_id' => $folder->id,
-            'linked_article_id' => $article->id,
             'sort_order' => 1,
         ]);
+
+        $article->update(['code_file_id' => $file->id]);
 
         $treeResponse = $this->getJson('/api/v1/code/tree');
 
