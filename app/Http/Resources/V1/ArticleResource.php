@@ -31,6 +31,9 @@ final class ArticleResource extends JsonResource
             'publishedAt' => $this->published_at?->toDateString(),
             'readingTime' => $this->reading_time,
             'featured' => $this->featured,
+            'codeFile' => $this->codeFile ? new CodeFileResource($this->codeFile) : null,
+            'codeFolder' => $this->codeFolder ? new CodeFolderResource($this->codeFolder) : null,
+            'codeProject' => $this->codeProject ? new CodeProjectResource($this->codeProject) : null,
         ];
     }
 }

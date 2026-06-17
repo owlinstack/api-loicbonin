@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Article extends Model
 {
@@ -25,6 +24,9 @@ final class Article extends Model
         'reading_time',
         'featured',
         'published_at',
+        'code_file_id',
+        'code_folder_id',
+        'code_project_id',
     ];
 
     protected $casts = [
@@ -51,10 +53,26 @@ final class Article extends Model
     }
 
     /**
-     * @return HasMany<CodeFile, $this>
+     * @return BelongsTo<CodeFile, $this>
      */
-    public function codeFiles(): HasMany
+    public function codeFile(): BelongsTo
     {
-        return $this->hasMany(CodeFile::class, 'linked_article_id');
+        return $this->belongsTo(CodeFile::class, 'code_file_id');
+    }
+
+    /**
+     * @return BelongsTo<CodeFolder, $this>
+     */
+    public function codeFolder(): BelongsTo
+    {
+        return $this->belongsTo(CodeFolder::class, 'code_folder_id');
+    }
+
+    /**
+     * @return BelongsTo<CodeProject, $this>
+     */
+    public function codeProject(): BelongsTo
+    {
+        return $this->belongsTo(CodeProject::class, 'code_project_id');
     }
 }

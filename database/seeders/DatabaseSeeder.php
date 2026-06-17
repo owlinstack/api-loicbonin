@@ -9,6 +9,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\CodeFile;
 use App\Models\CodeFolder;
+use App\Models\CodeProject;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\Tag;
@@ -141,11 +142,50 @@ final class DatabaseSeeder extends Seeder
             $tags['Filament']->id,
         ]);
 
+        // 5.5 Extra Articles for other code relationships
+        $articleFolder = Article::firstOrCreate(
+            ['slug' => 'exploring-laravel-directory-structure'],
+            [
+                'title' => 'Exploration de la structure des dossiers Laravel',
+                'excerpt' => 'Comprendre le rôle de chaque dossier dans l\'arborescence standard d\'un projet Laravel.',
+                'content' => 'Le dossier `app` contient le cœur de votre application. Nous allons explorer en détail sa structure interne...',
+                'category_id' => $categories['backend']->id,
+                'status' => ArticleStatus::Published,
+                'reading_time' => 3,
+                'featured' => false,
+                'published_at' => now(),
+            ]
+        );
+
+        $articleProject = Article::firstOrCreate(
+            ['slug' => 'building-complex-filament-projects'],
+            [
+                'title' => 'Bâtir des projets complexes avec Filament',
+                'excerpt' => 'Comment regrouper ses ressources et personnaliser ses panels d\'administration.',
+                'content' => 'Dans ce guide, nous voyons comment modulariser un projet Filament complet en créant des sections dédiées...',
+                'category_id' => $categories['backend']->id,
+                'status' => ArticleStatus::Published,
+                'reading_time' => 8,
+                'featured' => false,
+                'published_at' => now(),
+            ]
+        );
+
+        // 5.6 Code Projects
+        $codeProject = CodeProject::firstOrCreate(
+            ['slug' => 'filament-core-project'],
+            [
+                'name' => 'Filament Core Project',
+                'description' => 'Un projet regroupant toute l\'architecture de base de nos panels d\'administration.',
+            ]
+        );
+
         // 6. Code Folders
         $appFolder = CodeFolder::firstOrCreate(
             ['path' => 'app'],
             ['name' => 'app', 'sort_order' => 10]
         );
+        $appFolder->update(['code_project_id' => $codeProject->id]);
 
         $providersFolder = CodeFolder::firstOrCreate(
             ['path' => 'app/Providers'],
@@ -158,7 +198,7 @@ final class DatabaseSeeder extends Seeder
         );
 
         // 7. Code Files
-        CodeFile::firstOrCreate(
+        $codeFile = CodeFile::firstOrCreate(
             ['path' => 'app/Providers/Filament/AdminCreatorPanelProvider.php'],
             [
                 'name' => 'AdminCreatorPanelProvider.php',
@@ -208,9 +248,13 @@ class AdminCreatorPanelProvider extends PanelProvider
 PHP
                 ,
                 'folder_id' => $filamentFolder->id,
-                'linked_article_id' => $article->id,
                 'sort_order' => 10,
             ]
         );
+
+        // 8. Establish new Article -> Code links
+        $article->update(['code_file_id' => $codeFile->id]);
+        $articleFolder->update(['code_folder_id' => $appFolder->id]);
+        $articleProject->update(['code_project_id' => $codeProject->id]);
     }
 }

@@ -25,9 +25,13 @@ api-loicbonin/app/
 │   │   └── Api/V1/
 │   └── Resources/       # API Resources de transformation JSON (V1)
 │       └── V1/
+│           ├── CodeFolderResource.php
+│           ├── CodeProjectResource.php
+│           └── ...
 ├── Models/              # Modèles Eloquent avec ULIDs comme clés primaires
 │   ├── Article.php
 │   ├── Category.php
+│   ├── CodeProject.php
 │   ├── Profile.php
 │   └── ...
 └── Services/            # Logique métier pure (lecture, écriture, calculs)

@@ -21,7 +21,8 @@ final class CodeController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $rootFiles = CodeFile::whereNull('folder_id')
+        $rootFiles = CodeFile::with('linkedArticle')
+            ->whereNull('folder_id')
             ->orderBy('sort_order')
             ->get();
 
@@ -32,7 +33,8 @@ final class CodeController extends Controller
                     ->orderBy('sort_order')
                     ->get();
 
-                $files = CodeFile::where('folder_id', $folder->id)
+                $files = CodeFile::with('linkedArticle')
+                    ->where('folder_id', $folder->id)
                     ->orderBy('sort_order')
                     ->get();
 

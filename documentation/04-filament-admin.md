@@ -21,6 +21,7 @@ L'administration est configurée via [AdminCreatorPanelProvider.php](file:///Use
 ### 1. Articles (`ArticleResource`)
 * **Éditeur Markdown ergonomique** : Le champ `content` utilise le composant `MarkdownEditor` configuré à une hauteur confortable de `400px`, avec une barre d'outils complète incluant le mode plein écran, l'aperçu côte à côte, et l'insertion de fichiers médias.
 * **Création de Catégorie en Ligne** : Le sélecteur `category_id` intègre un bouton `+` (`createOptionForm`) permettant de créer une catégorie à la volée dans une fenêtre modale sans perdre la saisie de l'article.
+* **Liaison flexible de Code Source** : Une section dédiée permet de lier de manière exclusive à chaque article soit *Aucun*, soit un *Fichier de code seul* (`code_file_id`), soit un *Dossier de code* (`code_folder_id`), soit un *Projet de code* complet (`code_project_id`). L'affichage des sélecteurs est conditionné dynamiquement par un champ réactif.
 
 ### 2. Catégories (`CategoryResource`)
 * Permet de créer, éditer et trier les catégories.
@@ -30,10 +31,11 @@ L'administration est configurée via [AdminCreatorPanelProvider.php](file:///Use
 * Administre le portfolio de réalisations.
 * Utilise un composant `TagsInput` pour manipuler le tableau JSON `tech_stack` de manière visuelle et intuitive.
 
-### 4. Code & Arborescences (`CodeFolderResource` et `CodeFileResource`)
-Permet de configurer l'explorateur de fichiers interactif du frontend Next.js :
-* **Dossiers (`CodeFolderResource`)** : Un script d'aide (`afterStateUpdated`) calcule automatiquement le chemin logique (`path`) du dossier en se basant sur le dossier parent sélectionné (ex : si `parent` est `app` et `name` est `Http`, le chemin devient `app/Http`).
-* **Fichiers (`CodeFileResource`)** : Pour l'édition de code brut, le textarea standard a été transformé en éditeur de code monospace léger et ergonomique grâce à des attributs HTML personnalisés (`font-mono`, arrière-plan sombre, interlignage aéré).
+### 4. Projets, Dossiers & Fichiers de Code (`CodeProjectResource`, `CodeFolderResource` et `CodeFileResource`)
+Permet de configurer l'explorateur de fichiers interactif et les projets de code associés aux articles :
+* **Projets Code (`CodeProjectResource`)** : Gère les regroupements de dossiers sous un projet de code unique (ex : Filament Core Project).
+* **Dossiers (`CodeFolderResource`)** : Permet de créer l'arborescence des dossiers et d'y lier un projet de code parent. Un script d'aide (`afterStateUpdated`) calcule automatiquement le chemin logique (`path`) du dossier en se basant sur le dossier parent sélectionné (ex : si `parent` est `app` et `name` est `Http`, le chemin devient `app/Http`).
+* **Fichiers (`CodeFileResource`)** : Éditeur de code brut configuré avec une typographie monospace sombre. La liaison avec un article a été retirée pour être pilotée directement et de manière centralisée par la fiche de l'Article.
 
 ---
 

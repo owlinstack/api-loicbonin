@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 final class CodeFile extends Model
 {
@@ -18,7 +19,6 @@ final class CodeFile extends Model
         'language',
         'content',
         'folder_id',
-        'linked_article_id',
         'sort_order',
     ];
 
@@ -35,10 +35,10 @@ final class CodeFile extends Model
     }
 
     /**
-     * @return BelongsTo<Article, $this>
+     * @return HasOne<Article, $this>
      */
-    public function linkedArticle(): BelongsTo
+    public function linkedArticle(): HasOne
     {
-        return $this->belongsTo(Article::class, 'linked_article_id');
+        return $this->hasOne(Article::class, 'code_file_id');
     }
 }
