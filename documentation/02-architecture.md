@@ -89,3 +89,46 @@ Ils jouent le rôle de traducteurs entre le monde PHP/SQL (snake_case) et le mon
 * Conversion de `published_at` en `publishedAt`.
 * Conversion des relations en structures simplifiées (ex: renvoyer le slug de la catégorie au lieu de l'objet catégorie complet).
 * Suppression de l'enveloppement automatique (`public static $wrap = null` et surcharge de `toResponse`) pour livrer des JSON plats conformes aux schémas Zod.
+
+---
+
+## 📡 Points de Terminaison API (Endpoints V1)
+
+Toutes les routes de l'API sont préfixées par `/api/v1/` et sont en lecture seule (stateless).
+
+### 1. Profil (`GET /api/v1/profile`)
+Retourne les données d'identité, les compétences, le parcours professionnel (timeline) et académique (éducation) du développeur.
+* **Payload de Réponse (JSON)** :
+  ```json
+  {
+    "name": "Loïc Bonin",
+    "bio": "Développeur full-stack basé à Lyon...",
+    "skills": [
+      { "term": "Frontend", "description": "Vue.JS, Nuxt.JS..." }
+    ],
+    "timeline": [
+      { "date": "2021 — présent", "title": "Développeur indépendant", "description": "..." }
+    ],
+    "education": [
+      { "date": "2018 — 2019", "title": "Bachelor Sciences U", "description": "..." }
+    ],
+    "cvUrl": "http://localhost:8000/storage/cvs/cv.pdf",
+    "avatarUrl": "http://localhost:8000/storage/avatars/avatar.jpg"
+  }
+  ```
+
+### 2. Articles (`GET /api/v1/articles` & `GET /api/v1/articles/{slug}`)
+* **Liste** (`GET /api/v1/articles?category={slug}&tag={name}&page={number}`) : Renvoie les articles publiés paginés.
+* **Détails** (`GET /api/v1/articles/{slug}`) : Renvoie un article unique avec ses liaisons de code source éventuelles (`codeFile`, `codeFolder`, ou `codeProject`).
+
+### 3. Projets Portfolio (`GET /api/v1/projects` & `GET /api/v1/projects/{slug}`)
+Renvoie la liste ou le détail des réalisations du portfolio (champs `title`, `description`, `techStack`, `liveUrl`, `repoUrl`).
+
+### 4. Catégories & Tags (`GET /api/v1/categories` & `GET /api/v1/tags`)
+* `/categories` : Retourne la liste des catégories avec le décompte d'articles associés (`count`).
+* `/tags` : Retourne la liste à plat des tags uniques sous forme de tableau de chaînes.
+
+### 5. Explorateur de Code Source
+* `/code/tree` : Retourne l'arborescence complète des dossiers et fichiers de code (JSON imbriqué récursif).
+* `/code/files/{path}` : Retourne le détail d'un fichier source unique (nom, langage, contenu de code brut) identifié par son chemin relatif (ex : `app/Http/Controllers/Api/V1/ProfileController.php`).
+
