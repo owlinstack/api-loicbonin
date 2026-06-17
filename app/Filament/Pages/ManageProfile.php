@@ -36,7 +36,7 @@ final class ManageProfile extends Page implements HasForms
     {
         $profile = Profile::first() ?? Profile::create([
             'name' => 'Loïc Bonin',
-            'bio' => 'Développeur full-stack basé à Paris.',
+            'bio' => 'Développeur full-stack basé à Lyon.',
             'skills' => [],
             'timeline' => [],
         ]);
@@ -54,13 +54,20 @@ final class ManageProfile extends Page implements HasForms
                 Textarea::make('bio')
                     ->required()
                     ->rows(4),
+                FileUpload::make('avatar_url')
+                    ->label('Photo de Profil')
+                    ->image()
+                    ->disk('public')
+                    ->directory('avatars')
+                    ->preserveFilenames(),
                 FileUpload::make('cv_url')
                     ->label('CV (PDF)')
                     ->acceptedFileTypes(['application/pdf'])
                     ->disk('public')
                     ->directory('cvs')
                     ->downloadable()
-                    ->openable(),
+                    ->openable()
+                    ->preserveFilenames(),
                 Repeater::make('skills')
                     ->label('Compétences')
                     ->schema([
@@ -74,6 +81,15 @@ final class ManageProfile extends Page implements HasForms
                     ->schema([
                         TextInput::make('date')->required()->placeholder('ex: 2024 - présent'),
                         TextInput::make('title')->required(),
+                        Textarea::make('description')->required()->rows(2),
+                    ])
+                    ->columnSpanFull()
+                    ->collapsible(),
+                Repeater::make('education')
+                    ->label('Éducation / Formations')
+                    ->schema([
+                        TextInput::make('date')->required()->placeholder('ex: 2017 - 2019'),
+                        TextInput::make('title')->required()->placeholder('ex: Master Informatique, EPITA'),
                         Textarea::make('description')->required()->rows(2),
                     ])
                     ->columnSpanFull()

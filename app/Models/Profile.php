@@ -16,11 +16,14 @@ final class Profile extends Model
         'bio',
         'skills',
         'timeline',
+        'education',
         'cv_url',
+        'avatar_url',
     ];
 
     protected $casts = [
         'skills' => 'array',
         'timeline' => 'array',
+        'education' => 'array',
     ];
 }

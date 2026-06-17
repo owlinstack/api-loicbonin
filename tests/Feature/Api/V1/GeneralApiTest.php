@@ -59,7 +59,11 @@ final class GeneralApiTest extends TestCase
             'timeline' => [
                 ['date' => '2026', 'title' => 'Test Job', 'description' => 'Job description'],
             ],
+            'education' => [
+                ['date' => '2019', 'title' => 'EPITA', 'description' => 'Diplôme info'],
+            ],
             'cv_url' => 'cvs/test-cv.pdf',
+            'avatar_url' => 'avatars/test-avatar.jpg',
         ]);
 
         $response = $this->getJson('/api/v1/profile');
@@ -81,12 +85,22 @@ final class GeneralApiTest extends TestCase
                         'description',
                     ],
                 ],
+                'education' => [
+                    '*' => [
+                        'date',
+                        'title',
+                        'description',
+                    ],
+                ],
                 'cvUrl',
+                'avatarUrl',
             ])
             ->assertJsonPath('name', 'Loïc de Test')
             ->assertJsonPath('bio', 'Ma Bio de test')
             ->assertJsonPath('skills.0.term', 'HTML')
-            ->assertJsonPath('timeline.0.title', 'Test Job');
+            ->assertJsonPath('timeline.0.title', 'Test Job')
+            ->assertJsonPath('education.0.title', 'EPITA')
+            ->assertJsonPath('avatarUrl', asset('storage/avatars/test-avatar.jpg'));
     }
 
     public function test_can_get_code_tree_and_files(): void
