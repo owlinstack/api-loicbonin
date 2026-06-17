@@ -18,11 +18,21 @@ final class CodeFolderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $projectSlug = null;
+        $folder = $this->resource;
+        while ($folder) {
+            if ($folder->code_project_id) {
+                $projectSlug = $folder->codeProject?->slug;
+                break;
+            }
+            $folder = $folder->parent;
+        }
+
         $subfolders = $this->resource->children->map(function (CodeFolder $folder) use ($request) {
             return (new self($folder))->toArray($request);
         })->all();
 
-        $files = $this->resource->files->map(function ($file) {
+        $files = $this->resource->files->map(function ($file) use ($projectSlug) {
             return [
                 'name' => $file->name,
                 'path' => $file->path,
@@ -30,6 +40,7 @@ final class CodeFolderResource extends JsonResource
                 'content' => $file->content,
                 'linkedArticleSlug' => $file->linkedArticle?->slug,
                 'linkedArticleTitle' => $file->linkedArticle?->title,
+                'projectSlug' => $projectSlug,
             ];
         })->all();
 
@@ -37,6 +48,7 @@ final class CodeFolderResource extends JsonResource
             'name' => $this->resource->name,
             'path' => $this->resource->path,
             'children' => array_merge($subfolders, $files),
+            'projectSlug' => $projectSlug,
         ];
     }
 }
