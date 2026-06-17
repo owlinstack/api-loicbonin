@@ -46,6 +46,10 @@ Pour éviter l'affichage d'un tableau de liste inadapté à un profil personnel 
 * **Concept** : La page charge le premier enregistrement de la table `profiles` (ou le crée s'il est manquant) lors de sa phase de montage (`mount`).
 * **Repeaters interactifs** :
   * Un composant `Repeater` permet de gérer de manière fluide et par glisser-déposer les compétences complexes (`skills`).
-  * Un autre `Repeater` gère la timeline professionnelle (`timeline`) comprenant les dates, intitulés de postes, et descriptions de tâches.
-* **Chargement de CV PDF** : Un composant `FileUpload` restreint au type `application/pdf` permet de charger le fichier CV directement vers le dossier `storage/cvs/`.
+  * Un composant `Repeater` gère la timeline professionnelle (`timeline`) comprenant les dates, intitulés de postes, et descriptions de tâches.
+  * Un composant `Repeater` gère le parcours académique et les formations (`education`) comprenant les dates, intitulés de diplômes, et descriptions.
+* **Téléversement de Médias** :
+  * **Photo de Profil (Avatar)** : Un composant `FileUpload` d'image (`image()`) stockant la photo de profil sous le dossier `storage/avatars/`.
+  * **CV PDF** : Un composant `FileUpload` restreint au type `application/pdf` stockant le fichier CV sous `storage/cvs/`.
+  * *Note* : Les deux champs utilisent `preserveFilenames()` pour conserver le nom d'origine des fichiers.
 * **Intégration Blade** : Le rendu s'effectue dans [manage-profile.blade.php](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/api-loicbonin/resources/views/filament/pages/manage-profile.blade.php) à l'aide des structures et boutons natifs de Filament.
