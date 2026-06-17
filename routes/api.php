@@ -12,6 +12,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function (): void {
     Route::get('tags', [V1\TagController::class, 'index']);
     Route::apiResource('projects', V1\ProjectController::class)->only(['index', 'show']);
     Route::get('code/tree', [V1\CodeController::class, 'tree']);
+    Route::get('code/projects', [V1\CodeController::class, 'projects']);
+    Route::get('code/projects/{slug}/tree', [V1\CodeController::class, 'projectTree']);
     Route::get('code/files/{path}', [V1\CodeController::class, 'show'])->where('path', '.*');
     Route::get('profile', [V1\ProfileController::class, 'show']);
 });

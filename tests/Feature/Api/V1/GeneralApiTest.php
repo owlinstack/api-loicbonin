@@ -9,6 +9,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\CodeFile;
 use App\Models\CodeFolder;
+use App\Models\CodeProject;
 use App\Models\Profile;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -156,5 +157,47 @@ final class GeneralApiTest extends TestCase
     {
         $response = $this->getJson('/api/v1/code/files/non-existent.php');
         $response->assertStatus(404);
+    }
+
+    public function test_can_list_code_projects_and_get_tree(): void
+    {
+        $project = CodeProject::create([
+            'name' => 'Project Alpha',
+            'slug' => 'project-alpha',
+            'description' => 'Test project description',
+        ]);
+
+        $folder = CodeFolder::create([
+            'name' => 'src',
+            'path' => 'src',
+            'code_project_id' => $project->id,
+            'sort_order' => 1,
+        ]);
+
+        CodeFile::create([
+            'name' => 'main.js',
+            'path' => 'src/main.js',
+            'language' => 'javascript',
+            'content' => 'console.log("hello");',
+            'folder_id' => $folder->id,
+            'sort_order' => 1,
+        ]);
+
+        // 1. Test listing
+        $listResponse = $this->getJson('/api/v1/code/projects');
+        $listResponse->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'Project Alpha',
+                'slug' => 'project-alpha',
+                'description' => 'Test project description',
+            ]);
+
+        // 2. Test tree
+        $treeResponse = $this->getJson('/api/v1/code/projects/project-alpha/tree');
+        $treeResponse->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'src',
+                'path' => 'src',
+            ]);
     }
 }
