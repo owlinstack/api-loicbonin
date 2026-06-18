@@ -74,8 +74,8 @@ final class CodeTreeService
                 ->get();
 
             $tree[] = [
-                'name'     => $folder->name,
-                'path'     => $folder->path,
+                'name' => $folder->name,
+                'path' => $folder->path,
                 'children' => array_merge(
                     $this->buildFolderTree($childFolders),
                     $this->mapFiles($files),
@@ -95,11 +95,11 @@ final class CodeTreeService
     private function mapFiles(Collection $files): array
     {
         return $files->map(fn (CodeFile $f) => [
-            'name'               => $f->name,
-            'path'               => $f->path,
-            'language'           => $f->language,
-            'content'            => $f->content,
-            'linkedArticleSlug'  => $f->linkedArticle?->slug,
+            'name' => $f->name,
+            'path' => $f->path,
+            'language' => $f->language,
+            'content' => $f->content,
+            'linkedArticleSlug' => $f->linkedArticle?->slug,
             'linkedArticleTitle' => $f->linkedArticle?->title,
         ])->toArray();
     }

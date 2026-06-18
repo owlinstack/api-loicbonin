@@ -27,9 +27,9 @@ final class CodeController extends Controller
         $projects = CodeProject::orderBy('name')->get();
 
         return response()->json($projects->map(fn (CodeProject $p) => [
-            'id'          => $p->id,
-            'name'        => $p->name,
-            'slug'        => $p->slug,
+            'id' => $p->id,
+            'name' => $p->name,
+            'slug' => $p->slug,
             'description' => $p->description,
         ]));
     }
@@ -50,4 +50,3 @@ final class CodeController extends Controller
         return new CodeFileResource($file);
     }
 }
-
