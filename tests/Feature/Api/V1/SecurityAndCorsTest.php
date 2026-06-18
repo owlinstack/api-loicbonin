@@ -47,4 +47,17 @@ final class SecurityAndCorsTest extends TestCase
         $response = $this->getJson('/api/v1/profile');
         $response->assertStatus(429);
     }
+
+    public function test_cors_preflight_response_headers(): void
+    {
+        $response = $this->withHeaders([
+            'Origin' => 'http://localhost:3000',
+            'Access-Control-Request-Method' => 'GET',
+            'Access-Control-Request-Headers' => 'Content-Type',
+        ])->json('OPTIONS', '/api/v1/profile');
+
+        $response->assertStatus(204)
+            ->assertHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS')
+            ->assertHeader('Access-Control-Max-Age', '86400');
+    }
 }
