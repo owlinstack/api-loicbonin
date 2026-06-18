@@ -104,6 +104,58 @@ final class GeneralApiTest extends TestCase
             ->assertJsonPath('avatarUrl', asset('storage/avatars/test-avatar.jpg'));
     }
 
+    public function test_get_profile_returns_fallback_when_empty_db(): void
+    {
+        Profile::query()->delete();
+
+        $response = $this->getJson('/api/v1/profile');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'name',
+                'bio',
+                'skills' => [
+                    '*' => [
+                        'term',
+                        'description',
+                    ],
+                ],
+                'timeline' => [
+                    '*' => [
+                        'date',
+                        'title',
+                        'description',
+                    ],
+                ],
+                'education' => [
+                    '*' => [
+                        'date',
+                        'title',
+                        'description',
+                    ],
+                ],
+                'cvUrl',
+                'avatarUrl',
+            ])
+            ->assertJsonPath('name', 'Loïc Bonin')
+            ->assertJsonPath('bio', "Développeur full-stack basé à Lyon. Depuis 2016, je conçois et développe des applications web responsive. Spécialisé en PHP et TypeScript, j'ai aussi de l'expérience OPS en déploiement et gestion de serveurs dédiées. Appétence pour le mentorat et compétences pédagogiques, je pratique une intégration pragmatique et réfléchie des outils IA pour chaque besoin et contrainte de projet.(SDD/Context Engineering)");
+    }
+
+    public function test_articles_list_validates_query_parameters(): void
+    {
+        $responseNegativePage = $this->getJson('/api/v1/articles?page=-1');
+        $responseNegativePage->assertStatus(422)
+            ->assertJsonValidationErrors(['page']);
+
+        $responseHugePageSize = $this->getJson('/api/v1/articles?pageSize=150');
+        $responseHugePageSize->assertStatus(422)
+            ->assertJsonValidationErrors(['pageSize']);
+
+        $responseStringPage = $this->getJson('/api/v1/articles?page=abc');
+        $responseStringPage->assertStatus(422)
+            ->assertJsonValidationErrors(['page']);
+    }
+
     public function test_can_get_code_tree_and_files(): void
     {
         $category = Category::create(['slug' => 'backend', 'label' => 'Backend']);
