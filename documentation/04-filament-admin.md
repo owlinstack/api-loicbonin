@@ -6,7 +6,7 @@ Ce document présente l'architecture du panneau d'administration **AdminCreator*
 
 ## 🛡️ Le Panel AdminCreator
 
-L'administration est configurée via [AdminCreatorPanelProvider.php](/api-loicbonin/app/Providers/Filament/AdminCreatorPanelProvider.php) et exposée sur l'adresse `/admin-creator`.
+L'administration est configurée via [AdminCreatorPanelProvider.php](../app/Providers/Filament/AdminCreatorPanelProvider.php) et exposée sur l'adresse `/admin-creator`.
 
 - **Couleur du Design System** : Une couleur primaire personnalisée (`#01696f`, Teal) est appliquée pour correspondre à la charte graphique globale.
 - **Sécurité** : Connexion requise et gestion MFA prête à être activée en production.
@@ -49,7 +49,7 @@ Permet de configurer l'explorateur de fichiers interactif et les projets de code
 
 ## 👤 La Page Profil Unique (Settings UX)
 
-Pour éviter l'affichage d'un tableau de liste inadapté à un profil personnel unique, l'édition du profil s'effectue via une **Page de Paramètres** dédiée : [ManageProfile.php](/api-loicbonin/app/Filament/Pages/ManageProfile.php).
+Pour éviter l'affichage d'un tableau de liste inadapté à un profil personnel unique, l'édition du profil s'effectue via une **Page de Paramètres** dédiée : [ManageProfile.php](../app/Filament/Pages/ManageProfile.php).
 
 - **Concept** : La page charge le premier enregistrement de la table `profiles` (ou le crée s'il est manquant) lors de sa phase de montage (`mount`).
 - **Repeaters interactifs** :
@@ -60,4 +60,4 @@ Pour éviter l'affichage d'un tableau de liste inadapté à un profil personnel 
     - **Photo de Profil (Avatar)** : Un composant `FileUpload` d'image (`image()`) stockant la photo de profil sous le dossier `storage/avatars/`.
     - **CV PDF** : Un composant `FileUpload` restreint au type `application/pdf` stockant le fichier CV sous `storage/cvs/`.
     - _Note_ : Les deux champs utilisent `preserveFilenames()` pour conserver le nom d'origine des fichiers.
-- **Intégration Blade** : Le rendu s'effectue dans [manage-profile.blade.php](/api-loicbonin/resources/views/filament/pages/manage-profile.blade.php) à l'aide des structures et boutons natifs de Filament.
+- **Intégration Blade** : Le rendu s'effectue dans [manage-profile.blade.php](../resources/views/filament/pages/manage-profile.blade.php) à l'aide des structures et boutons natifs de Filament.

@@ -10,7 +10,7 @@ L'application suit l'architecture standard de Laravel enrichie d'une couche de s
 
 ```
 api-loicbonin/app/
-├── DTOs/                # Objets de transfert de données (lecture seule, immuables)
+├── DTOs/                # Exemples de structures de transfert (non utilisés en production)
 │   ├── ArticleData.php
 │   └── ...
 ├── Enums/               # Enums PHP natifs typés string (ex: ArticleStatus)
@@ -18,11 +18,14 @@ api-loicbonin/app/
 │   └── ...
 ├── Filament/            # Configuration de l'administration Filament v5
 │   ├── Pages/           # Pages personnalisées (ex: ManageProfile)
-│   ├── Resources/       # Définition des CRUD de ressources (Articles, Projets...)
-│   └── Providers/       # Fournisseur du panel AdminCreatorPanelProvider
+│   └── Resources/       # Définition des CRUD de ressources (Articles, Projets...)
 ├── Http/
 │   ├── Controllers/     # Contrôleurs API versionnés (GET/POST...)
 │   │   └── Api/V1/
+│   ├── Requests/        # Form Requests pour la validation et le typage des requêtes (V1)
+│   │   └── V1/
+│   │       ├── ListArticlesRequest.php
+│   │       └── ...
 │   └── Resources/       # API Resources de transformation JSON (V1)
 │       └── V1/
 │           ├── CodeFolderResource.php
@@ -34,6 +37,9 @@ api-loicbonin/app/
 │   ├── CodeProject.php
 │   ├── Profile.php
 │   └── ...
+├── Providers/           # Fournisseurs de services
+│   ├── AppServiceProvider.php
+│   └── Filament/       # Fournisseur du panel AdminCreatorPanelProvider
 └── Services/            # Logique métier pure (lecture, écriture, calculs)
     └── ArticleService.php
 ```
@@ -51,7 +57,10 @@ Lorsqu'un visiteur charge une page sur le frontend (ex : la liste des articles),
 [ HTTP Routing ]  ──► Applique le middleware de limitation de débit (throttle:api)
         │
         ▼
-[ ArticleController ] ──► Extrait et convertit les paramètres de requête (?category=)
+[ Form Request ]  ──► Valide et type les paramètres d'entrée (ex: ListArticlesRequest)
+        │
+        ▼
+[ ArticleController ] ──► Reçoit les données validées et appelle le service métier
         │
         ▼
 [ ArticleService ] ──► Exécute la logique (sélectionne les articles publiés, filtre, trie)
@@ -81,10 +90,13 @@ Lorsqu'un visiteur charge une page sur le frontend (ex : la liste des articles),
 ### 2. Couche de Service (`app/Services/`)
 Toute la logique de requêtage, de filtre et de calcul est centralisée dans les services (ex : `ArticleService`). Les contrôleurs ne contiennent aucune requête SQL. 
 
-### 3. Contrôleurs API (`app/Http/Controllers/Api/V1/`)
-Les contrôleurs valident les paramètres d'entrée, appellent le service approprié et retournent une ressource API. Ils sont versionnés sous `V1/` pour anticiper les évolutions futures.
+### 3. Form Requests (`app/Http/Requests/V1/`)
+Les requêtes entrantes complexes ou nécessitant une validation stricte (ex: query params de filtrage ou pagination) sont validées et typées via des Form Requests dédiées avant d'atteindre les contrôleurs. Elles garantissent un typage fort pour la couche service.
 
-### 4. API Resources (`app/Http/Resources/V1/`)
+### 4. Contrôleurs API (`app/Http/Controllers/Api/V1/`)
+Les contrôleurs reçoivent les données déjà validées par les Form Requests, orchestrent l'appel aux services métier correspondants, et retournent la ressource API formatée. Ils sont versionnés sous `V1/`.
+
+### 5. API Resources (`app/Http/Resources/V1/`)
 Ils jouent le rôle de traducteurs entre le monde PHP/SQL (snake_case) et le monde JavaScript/TypeScript (camelCase) :
 * Conversion de `published_at` en `publishedAt`.
 * Conversion des relations en structures simplifiées (ex: renvoyer le slug de la catégorie au lieu de l'objet catégorie complet).

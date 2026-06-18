@@ -8,7 +8,7 @@ Ce document liste la pile technologique (stack) du backend, les versions majeure
 
 | Technologie      | Version   | Rôle dans le projet                           | Justification technique                                                                                                                           |
 | :--------------- | :-------- | :-------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **PHP**          | `8.4.x`   | Langage de programmation principal.           | Typage de propriétés strict, support des Enums natifs, closures courtes, et constantes typées. Requis pour Laravel 13.                           |
+| **PHP**          | `8.3+`    | Langage de programmation principal.           | Typage de propriétés strict, support des Enums natifs, closures courtes, et constantes typées. Version minimale requise par Laravel 13.           |
 | **Laravel**      | `13.x`    | Framework applicatif principal (API REST).    | Rapidité de mise en place de routes, contrôleurs versionnés, transformations JSON (API Resources) et support du rate limiting natif.             |
 | **Filament**     | `v5.x`    | Panneau d'administration (AdminCreator).       | Génération d'interfaces d'administration asynchrones basées sur Livewire v4, utilisation de structures `Schema` découplées et MFA intégré.        |
 | **SQLite**       | `3.x`     | Base de données de développement & tests.     | Légèreté totale en local (fichier `database.sqlite` ou base `:memory:` pour les tests), évitant la dépendance d'un service de base externe.      |

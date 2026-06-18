@@ -20,8 +20,8 @@ declare(strict_types=1);
 
 Toutes les classes qui ne sont pas destinées à être étendues doivent être marquées comme `final`. Cela évite l'héritage sauvage et optimise l'analyse statique :
 
-- **Classes Finales** : Contrôleurs, Resources API, Services, DTOs, Middlewares, Panel Providers, Filament Resources.
-- **Classes non-finales** : Modèles Eloquent (requis par le proxying d'Eloquent), Migrations et Seeders.
+- **Classes Finales** : Contrôleurs, Resources API, Services, DTOs, Middlewares, Panel Providers, Filament Resources, Modèles Eloquent.
+- **Classes non-finales** : Migrations et Seeders uniquement.
 
 ### 3. Typage Explicite
 
@@ -58,16 +58,53 @@ Analyseur de code statique configuré au **Niveau 8** (le niveau le plus strict 
 ### 1. Gestion des Secrets
 
 - Aucun mot de passe, clé d'API, ou token ne doit être écrit en dur dans le code source.
-- Tous les secrets doivent être référencés via des variables d'environnement (`env()`) dans des fichiers de configuration, et documentés dans le fichier [env.example](/api-loicbonin/.env.example).
+- Tous les secrets doivent être référencés via des variables d'environnement (`env()`) dans des fichiers de configuration, et documentés dans le fichier [.env.example](../.env.example).
 - Le fichier `.env` réel ne doit **jamais** être commit sur git.
 
 ### 2. Contrôle CORS (`config/cors.php`)
 
 Les requêtes cross-origin vers l'API sont strictement restreintes aux domaines frontend autorisés :
 
-- **Local** : `http://localhost:3000` (Développement Next.js).
+- **Local** : `http://localhost:3000` (configurable via `FRONTEND_URL` dans `.env`).
 - **Production** : `https://loicbonin.com` (Portfolio public).
+- **Méthodes autorisées** : uniquement `GET`, `HEAD` et `OPTIONS` (l'API est en lecture seule).
+- **Cache preflight** : `max_age = 86400` secondes (24 h) — les navigateurs peuvent mettre en cache les requêtes OPTIONS.
 
 ### 3. Limiteur de Débit (Rate Limiting)
 
 Toutes les routes de l'API sont protégées contre le déni de service et le spam à l'aide du middleware `throttle:api` configuré à **60 requêtes par minute** par adresse IP dans `AppServiceProvider.php`.
+
+---
+
+## 📋 Validation des Paramètres d'Entrée (Query Params)
+
+Afin de garantir l'intégrité de l'application et d'éviter les comportements inattendus liés à un typage lâche ou à des injections, toutes les données entrantes via les requêtes HTTP (y compris les paramètres d'URL comme les query params `?category=`, `?page=`, etc.) doivent être validées.
+
+### 1. Form Requests (`app/Http/Requests/`)
+
+- Toute route de contrôleur recevant des données utilisateurs ou des query parameters doit utiliser une classe de requête dédiée (`FormRequest`) héritant de `Illuminate\Foundation\Http\FormRequest`.
+- La classe de requête doit être marquée `final class`.
+- La méthode `rules()` doit définir explicitement les types attendus (ex: `integer`, `string`, `min`, `max`, `nullable`).
+- Les contrôleurs ne doivent **jamais** accéder directement aux paramètres de la requête sans validation préalable. Ils doivent utiliser `$request->validated()` pour récupérer uniquement les données nettoyées et validées.
+
+### 2. Exemple d'implémentation (`ListArticlesRequest.php`)
+
+```php
+final class ListArticlesRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'category' => ['nullable', 'string', 'max:255'],
+            'tag' => ['nullable', 'string', 'max:255'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'pageSize' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ];
+    }
+}
+```
