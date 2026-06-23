@@ -326,4 +326,12 @@ final class ArticleApiTest extends TestCase
             ->assertJsonPath('codeProject.tree.0.name', 'app')
             ->assertJsonPath('codeProject.tree.0.children.0.name', 'index.php');
     }
+
+    public function test_get_non_existent_article_returns_404(): void
+    {
+        $response = $this->getJson('/api/v1/articles/does-not-exist');
+
+        $response->assertStatus(404)
+            ->assertJsonPath('message', 'Article not found');
+    }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\V1;
 
 use App\Enums\ArticleStatus;
+use App\Http\Resources\V1\CategoryResource;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\CodeFile;
@@ -13,6 +14,7 @@ use App\Models\CodeProject;
 use App\Models\Profile;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 final class GeneralApiTest extends TestCase
@@ -310,5 +312,42 @@ final class GeneralApiTest extends TestCase
                 'name' => 'Button.tsx',
                 'path' => 'src/components/Button.tsx',
             ]);
+    }
+
+    public function test_category_resource_resolves_count_fallback_without_eager_loading(): void
+    {
+        $category = Category::create(['slug' => 'rust', 'label' => 'Rust']);
+
+        // Create 2 published articles under Rust
+        Article::create([
+            'title' => 'Article Rust 1',
+            'slug' => 'article-rust-1',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+
+        Article::create([
+            'title' => 'Article Rust 2',
+            'slug' => 'article-rust-2',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+
+        // Instantiate CategoryResource without articles_count attribute (so it hits fallback)
+        $resource = new CategoryResource($category);
+        $request = Request::create('/api/v1/categories', 'GET');
+        $data = $resource->toArray($request);
+
+        $this->assertEquals('rust', $data['slug']);
+        $this->assertEquals('Rust', $data['label']);
+        $this->assertEquals(2, $data['count']); // Checks that count resolves to 2 using articles()->count()
     }
 }
