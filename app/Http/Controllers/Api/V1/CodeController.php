@@ -24,7 +24,7 @@ final class CodeController extends Controller
 
     public function projects(): JsonResponse
     {
-        $projects = CodeProject::query()->orderBy('name', 'asc')->get();
+        $projects = CodeProject::query()->where('is_published', true)->orderBy('name', 'asc')->get();
 
         return response()->json($projects->map(fn (CodeProject $p) => [
             'id' => $p->id,
@@ -36,7 +36,7 @@ final class CodeController extends Controller
 
     public function projectTree(string $slug): JsonResponse
     {
-        $project = CodeProject::query()->where('slug', $slug)->firstOrFail();
+        $project = CodeProject::query()->where('slug', $slug)->where('is_published', true)->firstOrFail();
 
         return response()->json($this->codeTreeService->getProjectTree($project));
     }

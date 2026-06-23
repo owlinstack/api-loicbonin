@@ -17,6 +17,11 @@ final class CodeProject extends Model
         'name',
         'slug',
         'description',
+        'is_published',
+    ];
+
+    protected $casts = [
+        'is_published' => 'boolean',
     ];
 
     /**

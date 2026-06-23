@@ -40,6 +40,9 @@ final class CodeProjectResource extends Resource
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(255),
+                    Forms\Components\Toggle::make('is_published')
+                        ->label('Publié')
+                        ->default(true),
                     Forms\Components\Textarea::make('description')
                         ->columnSpanFull()
                         ->rows(3),
@@ -56,6 +59,8 @@ final class CodeProjectResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
+                Tables\Columns\ToggleColumn::make('is_published')
+                    ->label('Publié'),
                 Tables\Columns\TextColumn::make('folders_count')
                     ->counts('folders')
                     ->badge()

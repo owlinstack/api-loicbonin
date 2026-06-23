@@ -346,6 +346,37 @@ final class GeneralApiTest extends TestCase
             ]);
     }
 
+    public function test_cannot_list_or_get_tree_for_unpublished_code_projects(): void
+    {
+        $publishedProject = CodeProject::create([
+            'name' => 'Published Project',
+            'slug' => 'published-project',
+            'description' => 'Test project description',
+            'is_published' => true,
+        ]);
+
+        $unpublishedProject = CodeProject::create([
+            'name' => 'Unpublished Project',
+            'slug' => 'unpublished-project',
+            'description' => 'Test project description',
+            'is_published' => false,
+        ]);
+
+        // 1. Assert only published projects are returned
+        $listResponse = $this->getJson('/api/v1/code/projects');
+        $listResponse->assertStatus(200)
+            ->assertJsonFragment(['slug' => 'published-project'])
+            ->assertJsonMissing(['slug' => 'unpublished-project']);
+
+        // 2. Assert getting tree of unpublished project returns 404
+        $treeResponse = $this->getJson('/api/v1/code/projects/unpublished-project/tree');
+        $treeResponse->assertStatus(404);
+
+        // 3. Assert getting tree of published project returns 200
+        $treeResponse2 = $this->getJson('/api/v1/code/projects/published-project/tree');
+        $treeResponse2->assertStatus(200);
+    }
+
     public function test_category_resource_resolves_count_fallback_without_eager_loading(): void
     {
         $category = Category::create(['slug' => 'rust', 'label' => 'Rust']);

@@ -33,7 +33,7 @@ final class ArticleResource extends JsonResource
             'featured' => $this->featured,
             'codeFile' => $this->codeFile ? new CodeFileResource($this->codeFile) : null,
             'codeFolder' => $this->codeFolder ? new CodeFolderResource($this->codeFolder) : null,
-            'codeProject' => $this->codeProject ? new CodeProjectResource($this->codeProject) : null,
+            'codeProject' => ($this->codeProject && $this->codeProject->is_published) ? new CodeProjectResource($this->codeProject) : null,
         ];
     }
 }
