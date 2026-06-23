@@ -26,7 +26,13 @@ final class ArticleService
             ->where(fn ($q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()))
             ->when($category, fn ($q, $cat) => $q->whereRelation('category', 'slug', $cat))
             ->when($tag, fn ($q, $t) => $q->whereRelation('tags', 'name', $t))
-            ->with(['category', 'tags'])
+            ->with([
+                'category',
+                'tags',
+                'codeFile.folder.parent.parent.codeProject',
+                'codeFolder.parent.parent.codeProject',
+                'codeProject.rootFolders',
+            ])
             ->orderByDesc('published_at')
             ->paginate(perPage: $pageSize, page: $page);
     }
@@ -36,7 +42,13 @@ final class ArticleService
         return Article::query()
             ->where('status', ArticleStatus::Published)
             ->where('slug', $slug)
-            ->with(['category', 'tags'])
+            ->with([
+                'category',
+                'tags',
+                'codeFile.folder.parent.parent.codeProject',
+                'codeFolder.parent.parent.codeProject',
+                'codeProject.rootFolders',
+            ])
             ->first();
     }
 }

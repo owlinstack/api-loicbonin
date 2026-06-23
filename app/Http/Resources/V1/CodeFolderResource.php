@@ -18,15 +18,7 @@ final class CodeFolderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $projectSlug = null;
-        $folder = $this->resource;
-        while ($folder) {
-            if ($folder->code_project_id) {
-                $projectSlug = $folder->codeProject?->slug;
-                break;
-            }
-            $folder = $folder->parent;
-        }
+        $projectSlug = $this->resource->getProjectSlug();
 
         $subfolders = $this->resource->children->map(function (CodeFolder $folder) use ($request) {
             return (new self($folder))->toArray($request);

@@ -27,6 +27,41 @@ final class CodeFolder extends Model
     ];
 
     /**
+     * Cache du slug du projet pour le cycle de vie de la requête.
+     *
+     * @var array<string, ?string>
+     */
+    private static array $projectSlugCache = [];
+
+    /**
+     * Résout le slug du projet associé de manière récursive avec un cache mémoire.
+     */
+    public function getProjectSlug(): ?string
+    {
+        if (array_key_exists($this->id, self::$projectSlugCache)) {
+            return self::$projectSlugCache[$this->id];
+        }
+
+        if ($this->code_project_id) {
+            $slug = $this->codeProject?->slug;
+            self::$projectSlugCache[$this->id] = $slug;
+
+            return $slug;
+        }
+
+        if ($this->parent_id) {
+            $slug = $this->parent?->getProjectSlug();
+            self::$projectSlugCache[$this->id] = $slug;
+
+            return $slug;
+        }
+
+        self::$projectSlugCache[$this->id] = null;
+
+        return null;
+    }
+
+    /**
      * @return BelongsTo<CodeFolder, $this>
      */
     public function parent(): BelongsTo

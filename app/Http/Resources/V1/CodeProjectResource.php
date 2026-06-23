@@ -18,9 +18,9 @@ final class CodeProjectResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $rootFolders = $this->resource->folders()
-            ->whereNull('parent_id')
-            ->get();
+        $rootFolders = $this->resource->relationLoaded('rootFolders')
+            ? $this->resource->rootFolders
+            : $this->resource->rootFolders()->get();
 
         return [
             'id' => $this->resource->id,

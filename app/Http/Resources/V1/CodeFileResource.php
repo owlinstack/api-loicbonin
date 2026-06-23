@@ -18,16 +18,6 @@ final class CodeFileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $projectSlug = null;
-        $folder = $this->resource->folder;
-        while ($folder) {
-            if ($folder->code_project_id) {
-                $projectSlug = $folder->codeProject?->slug;
-                break;
-            }
-            $folder = $folder->parent;
-        }
-
         return [
             'name' => $this->resource->name,
             'path' => $this->resource->path,
@@ -35,7 +25,7 @@ final class CodeFileResource extends JsonResource
             'content' => $this->resource->content,
             'linkedArticleSlug' => $this->resource->linkedArticle?->slug,
             'linkedArticleTitle' => $this->resource->linkedArticle?->title,
-            'projectSlug' => $projectSlug,
+            'projectSlug' => $this->resource->folder?->getProjectSlug(),
         ];
     }
 }

@@ -28,6 +28,16 @@ final class CodeProject extends Model
     }
 
     /**
+     * @return HasMany<CodeFolder, $this>
+     */
+    public function rootFolders(): HasMany
+    {
+        return $this->hasMany(CodeFolder::class, 'code_project_id')
+            ->whereNull('parent_id')
+            ->orderBy('sort_order');
+    }
+
+    /**
      * @return HasOne<Article, $this>
      */
     public function linkedArticle(): HasOne
