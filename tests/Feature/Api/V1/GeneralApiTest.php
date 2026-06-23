@@ -21,8 +21,32 @@ final class GeneralApiTest extends TestCase
 
     public function test_can_list_categories(): void
     {
-        Category::create(['slug' => 'react', 'label' => 'React']);
-        Category::create(['slug' => 'tooling', 'label' => 'Tooling']);
+        $catReact = Category::create(['slug' => 'react', 'label' => 'React']);
+        $catTooling = Category::create(['slug' => 'tooling', 'label' => 'Tooling']);
+
+        // Article publié sous React
+        Article::create([
+            'title' => 'Article React 1',
+            'slug' => 'article-react-1',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $catReact->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+
+        // Article brouillon sous React (ne doit pas être compté)
+        Article::create([
+            'title' => 'Article React 2',
+            'slug' => 'article-react-2',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $catReact->id,
+            'status' => ArticleStatus::Draft,
+            'reading_time' => 3,
+            'published_at' => null,
+        ]);
 
         $response = $this->getJson('/api/v1/categories');
 
@@ -35,7 +59,17 @@ final class GeneralApiTest extends TestCase
                 ],
             ]);
 
-        $response->assertJsonFragment(['slug' => 'react']);
+        $response->assertJsonFragment([
+            'slug' => 'react',
+            'label' => 'React',
+            'count' => 1,
+        ]);
+
+        $response->assertJsonFragment([
+            'slug' => 'tooling',
+            'label' => 'Tooling',
+            'count' => 0,
+        ]);
     }
 
     public function test_can_list_tags(): void
@@ -235,6 +269,23 @@ final class GeneralApiTest extends TestCase
             'sort_order' => 1,
         ]);
 
+        $subfolder = CodeFolder::create([
+            'name' => 'components',
+            'path' => 'src/components',
+            'parent_id' => $folder->id,
+            'code_project_id' => null,
+            'sort_order' => 1,
+        ]);
+
+        CodeFile::create([
+            'name' => 'Button.tsx',
+            'path' => 'src/components/Button.tsx',
+            'language' => 'typescript',
+            'content' => 'export const Button = () => null;',
+            'folder_id' => $subfolder->id,
+            'sort_order' => 1,
+        ]);
+
         // 1. Test listing
         $listResponse = $this->getJson('/api/v1/code/projects');
         $listResponse->assertStatus(200)
@@ -250,6 +301,14 @@ final class GeneralApiTest extends TestCase
             ->assertJsonFragment([
                 'name' => 'src',
                 'path' => 'src',
+            ])
+            ->assertJsonFragment([
+                'name' => 'components',
+                'path' => 'src/components',
+            ])
+            ->assertJsonFragment([
+                'name' => 'Button.tsx',
+                'path' => 'src/components/Button.tsx',
             ]);
     }
 }

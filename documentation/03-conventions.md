@@ -108,3 +108,26 @@ final class ListArticlesRequest extends FormRequest
     }
 }
 ```
+
+---
+
+## ⚡ Bonnes Pratiques de Performance et Évitement du N+1
+
+Pour garantir des temps de réponse d'API sous les 50ms et éviter les surcharges de requêtes SQL sur la base de données, les développeurs doivent suivre les règles suivantes :
+
+### 1. Interdiction des requêtes SQL directes et du lazy-loading dans les API Resources
+Les transformateurs JSON (`JsonResource`) ne doivent jamais exécuter directement de requêtes SQL ou déclencher du lazy-loading récursif dans leur méthode `toArray()`.
+* **Pratique interdite** : Faire `$this->resource->folders()->whereNull(...)->get()` ou naviguer récursivement une relation non-eager-loadée.
+* **Pratique recommandée** :
+  * Déclarer une relation filtrée sur le modèle (ex : `rootFolders()`).
+  * Utiliser `relationLoaded('nomRelation')` pour vérifier si la relation est pré-chargée avant d'appeler les données en base.
+
+### 2. Eager-Loading systématique dans les Services
+Toutes les relations affichées ou utilisées dans les API Resources doivent être explicitement déclarées dans le tableau `with([...])` au niveau de la couche Service (ex : `ArticleService::listPublished()`). Les relations à niveaux multiples (ex : `codeFile.folder.parent.parent.codeProject`) doivent être explicitement déclarées jusqu'à la profondeur maximale attendue par la vue.
+
+### 3. Cache statique de cycle de vie de requête (Request-Lifetime Cache)
+Lorsqu'un parcours d'arborescence récursif (comme la remontée des parents d'un dossier pour trouver son projet) doit être effectué au cours de la sérialisation d'une collection :
+* Déclarer un tableau statique privé sur le modèle faisant office de cache local de requête (ex : `private static array $projectSlugCache = []`).
+* Résoudre la valeur récursivement en stockant le résultat dans le tableau statique pour la clé correspondante (ex: `self::$projectSlugCache[$this->id]`).
+* Grâce au cycle de vie de PHP-FPM, ce cache est vidé automatiquement à la fin de chaque requête HTTP, éliminant les requêtes redondantes sur un même élément durant la sérialisation sans risque de persistance obsolète entre les requêtes.
+
