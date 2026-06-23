@@ -41,6 +41,10 @@ final class ProjectResource extends Resource
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(255),
+                    Forms\Components\TextInput::make('year')
+                        ->label('Année')
+                        ->placeholder('ex: 2026')
+                        ->maxLength(50),
                     Forms\Components\Textarea::make('description')
                         ->required()
                         ->columnSpanFull()
@@ -77,6 +81,9 @@ final class ProjectResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('year')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tech_stack')
                     ->badge()
                     ->separator(','),
@@ -85,7 +92,8 @@ final class ProjectResource extends Resource
                 Tables\Columns\TextColumn::make('live_url')
                     ->limit(30),
             ])
-            ->defaultSort('created_at', 'desc')
+            ->reorderable('sort_order')
+            ->defaultSort('sort_order', 'asc')
             ->filters([
                 Tables\Filters\TernaryFilter::make('featured')
                     ->label('Mis en avant'),

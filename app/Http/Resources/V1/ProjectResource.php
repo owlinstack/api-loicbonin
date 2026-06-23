@@ -28,6 +28,7 @@ final class ProjectResource extends JsonResource
             'liveUrl' => $this->resource->live_url,
             'repoUrl' => $this->resource->repo_url,
             'featured' => $this->resource->featured,
+            'year' => $this->resource->year,
         ];
     }
 }

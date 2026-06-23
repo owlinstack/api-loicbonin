@@ -20,10 +20,13 @@ final class Project extends Model
         'live_url',
         'repo_url',
         'featured',
+        'sort_order',
+        'year',
     ];
 
     protected $casts = [
         'tech_stack' => 'array',
         'featured' => 'boolean',
+        'sort_order' => 'integer',
     ];
 }

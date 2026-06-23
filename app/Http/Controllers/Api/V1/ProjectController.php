@@ -13,14 +13,14 @@ final class ProjectController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        $projects = Project::orderBy('featured', 'desc')->orderBy('created_at', 'desc')->get();
+        $projects = Project::query()->orderBy('sort_order', 'asc')->orderBy('created_at', 'desc')->get();
 
         return ProjectResource::collection($projects);
     }
 
     public function show(string $slug): ProjectResource
     {
-        $project = Project::where('slug', $slug)->firstOrFail();
+        $project = Project::query()->where('slug', $slug)->firstOrFail();
 
         return new ProjectResource($project);
     }
