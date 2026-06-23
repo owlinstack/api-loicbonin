@@ -18,12 +18,17 @@ final class ProfileService
         $profile = Profile::query()->first();
 
         if ($profile) {
+            $showTimeline = $profile->show_timeline ?? true;
+            $showEducation = $profile->show_education ?? true;
+
             return [
                 'name' => $profile->name,
                 'bio' => $profile->bio,
                 'skills' => $profile->skills,
-                'timeline' => $profile->timeline,
-                'education' => $profile->education ?? [],
+                'showTimeline' => $showTimeline,
+                'timeline' => $showTimeline ? $profile->timeline : null,
+                'showEducation' => $showEducation,
+                'education' => $showEducation ? ($profile->education ?? []) : null,
                 'cvUrl' => $profile->cv_url ? asset('storage/'.$profile->cv_url) : '/cv-loic-bonin.pdf',
                 'avatarUrl' => $profile->avatar_url ? asset('storage/'.$profile->avatar_url) : null,
             ];
@@ -60,6 +65,7 @@ final class ProfileService
                     'description' => 'Suivi régulier des évolutions des outils, normes et Framework via source primaire (documentation). Veille active journalière sur l\'utilisation des outils IA.',
                 ],
             ],
+            'showTimeline' => true,
             'timeline' => [
                 [
                     'date' => '2021 — présent',
@@ -82,6 +88,7 @@ final class ProfileService
                     'description' => "Enseignement d'un module d'initiation au développement web: premiers pas, bonnes pratiques, git, création portfolio.",
                 ],
             ],
+            'showEducation' => true,
             'education' => [
                 [
                     'date' => '2018 — 2019',

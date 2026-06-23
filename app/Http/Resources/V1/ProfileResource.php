@@ -21,8 +21,10 @@ final class ProfileResource extends JsonResource
             'name' => $this->resource['name'] ?? '',
             'bio' => $this->resource['bio'] ?? '',
             'skills' => $this->resource['skills'] ?? [],
-            'timeline' => $this->resource['timeline'] ?? [],
-            'education' => $this->resource['education'] ?? [],
+            'showTimeline' => $this->resource['showTimeline'] ?? true,
+            'timeline' => $this->resource['timeline'] ?? null,
+            'showEducation' => $this->resource['showEducation'] ?? true,
+            'education' => $this->resource['education'] ?? null,
             'cvUrl' => $this->resource['cvUrl'] ?? null,
             'avatarUrl' => $this->resource['avatarUrl'] ?? null,
         ];

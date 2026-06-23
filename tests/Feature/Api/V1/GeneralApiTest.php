@@ -177,6 +177,38 @@ final class GeneralApiTest extends TestCase
             ->assertJsonPath('bio', "Développeur full-stack basé à Lyon. Depuis 2016, je conçois et développe des applications web responsive. Spécialisé en PHP et TypeScript, j'ai aussi de l'expérience OPS en déploiement et gestion de serveurs dédiées. Appétence pour le mentorat et compétences pédagogiques, je pratique une intégration pragmatique et réfléchie des outils IA pour chaque besoin et contrainte de projet.(SDD/Context Engineering)");
     }
 
+    public function test_get_profile_hides_timeline_and_education_when_toggled_off(): void
+    {
+        Profile::query()->delete();
+
+        Profile::create([
+            'name' => 'Loïc de Test Toggles',
+            'bio' => 'Ma Bio de test toggles',
+            'skills' => [
+                ['term' => 'HTML', 'description' => 'Super Skill'],
+            ],
+            'timeline' => [
+                ['date' => '2026', 'title' => 'Test Job', 'description' => 'Job description'],
+            ],
+            'show_timeline' => false,
+            'education' => [
+                ['date' => '2019', 'title' => 'EPITA', 'description' => 'Diplôme info'],
+            ],
+            'show_education' => false,
+            'cv_url' => 'cvs/test-cv.pdf',
+            'avatar_url' => 'avatars/test-avatar.jpg',
+        ]);
+
+        $response = $this->getJson('/api/v1/profile');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('name', 'Loïc de Test Toggles')
+            ->assertJsonPath('showTimeline', false)
+            ->assertJsonPath('timeline', null)
+            ->assertJsonPath('showEducation', false)
+            ->assertJsonPath('education', null);
+    }
+
     public function test_articles_list_validates_query_parameters(): void
     {
         $responseNegativePage = $this->getJson('/api/v1/articles?page=-1');

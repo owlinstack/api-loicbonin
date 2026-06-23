@@ -16,7 +16,9 @@ final class Profile extends Model
         'bio',
         'skills',
         'timeline',
+        'show_timeline',
         'education',
+        'show_education',
         'cv_url',
         'avatar_url',
     ];
@@ -24,6 +26,8 @@ final class Profile extends Model
     protected $casts = [
         'skills' => 'array',
         'timeline' => 'array',
+        'show_timeline' => 'boolean',
         'education' => 'array',
+        'show_education' => 'boolean',
     ];
 }

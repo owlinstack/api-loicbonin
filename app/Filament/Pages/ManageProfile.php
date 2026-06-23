@@ -10,6 +10,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
@@ -34,11 +35,14 @@ final class ManageProfile extends Page implements HasForms
 
     public function mount(): void
     {
-        $profile = Profile::first() ?? Profile::create([
+        $profile = Profile::query()->first() ?? Profile::query()->create([
             'name' => 'Loïc Bonin',
             'bio' => 'Développeur full-stack basé à Lyon.',
             'skills' => [],
             'timeline' => [],
+            'show_timeline' => true,
+            'education' => [],
+            'show_education' => true,
         ]);
 
         $this->form->fill($profile->toArray());
@@ -76,6 +80,9 @@ final class ManageProfile extends Page implements HasForms
                     ])
                     ->columnSpanFull()
                     ->collapsible(),
+                Toggle::make('show_timeline')
+                    ->label('Afficher le parcours (Timeline)')
+                    ->default(true),
                 Repeater::make('timeline')
                     ->label('Parcours (Timeline)')
                     ->schema([
@@ -85,6 +92,9 @@ final class ManageProfile extends Page implements HasForms
                     ])
                     ->columnSpanFull()
                     ->collapsible(),
+                Toggle::make('show_education')
+                    ->label("Afficher l'éducation")
+                    ->default(true),
                 Repeater::make('education')
                     ->label('Éducation / Formations')
                     ->schema([
@@ -109,7 +119,7 @@ final class ManageProfile extends Page implements HasForms
 
     public function save(): void
     {
-        $profile = Profile::first();
+        $profile = Profile::query()->first();
         if ($profile) {
             $profile->update($this->form->getState());
 
