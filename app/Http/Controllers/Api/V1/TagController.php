@@ -12,7 +12,7 @@ final class TagController extends Controller
 {
     public function index(): JsonResponse
     {
-        $tags = Tag::pluck('name');
+        $tags = Tag::query()->pluck('name');
 
         return response()->json($tags);
     }

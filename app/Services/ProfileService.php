@@ -15,7 +15,7 @@ final class ProfileService
      */
     public function getProfileData(): array
     {
-        $profile = Profile::first();
+        $profile = Profile::query()->first();
 
         if ($profile) {
             return [

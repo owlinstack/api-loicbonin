@@ -24,11 +24,16 @@ final class ArticleController extends Controller
     {
         $validated = $request->validated();
 
+        $category = (isset($validated['category']) && \is_string($validated['category'])) ? $validated['category'] : null;
+        $tag = (isset($validated['tag']) && \is_string($validated['tag'])) ? $validated['tag'] : null;
+        $page = (isset($validated['page']) && \is_int($validated['page'])) ? $validated['page'] : 1;
+        $pageSize = (isset($validated['pageSize']) && \is_int($validated['pageSize'])) ? $validated['pageSize'] : 10;
+
         $paginated = $this->articleService->listPublished(
-            category: $validated['category'] ?? null,
-            tag: $validated['tag'] ?? null,
-            page: isset($validated['page']) ? (int) $validated['page'] : 1,
-            pageSize: isset($validated['pageSize']) ? (int) $validated['pageSize'] : 10,
+            category: $category,
+            tag: $tag,
+            page: $page,
+            pageSize: $pageSize,
         );
 
         return new ArticleCollection($paginated);
