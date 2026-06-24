@@ -15,6 +15,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+/**
+ * Ressource Filament de gestion des dossiers de l'arborescence de code.
+ * Justification : Représente les répertoires virtuels permettant de regrouper récursivement
+ * les fichiers de code source d'un projet.
+ */
 final class CodeFolderResource extends Resource
 {
     protected static ?string $model = CodeFolder::class;
@@ -36,11 +41,13 @@ final class CodeFolderResource extends Resource
                         ->maxLength(255)
                         ->placeholder('ex: app, Http, Controllers')
                         ->live(onBlur: true)
+                        // Calcule et pré-remplit dynamiquement le chemin absolu du dossier
+                        // en concaténant le chemin du dossier parent sélectionné
                         ->afterStateUpdated(function ($state, $get, $set): void {
                             // Si parent_id est défini, on peut pré-remplir le chemin avec le chemin parent
                             $parentId = $get('parent_id');
                             if ($parentId) {
-                                $parent = CodeFolder::find($parentId);
+                                $parent = CodeFolder::find($parentId, ['*']);
                                 if ($parent) {
                                     $set('path', rtrim($parent->path, '/').'/'.ltrim($state, '/'));
 

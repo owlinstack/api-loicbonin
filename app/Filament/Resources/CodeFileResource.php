@@ -16,6 +16,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+/**
+ * Ressource Filament de gestion des fichiers de code source de l'arborescence.
+ * Justification : Représente les fichiers de code individuels qui contiennent le code source
+ * à afficher sur le front-end et qui peuvent être liés à des articles de blog.
+ */
 final class CodeFileResource extends Resource
 {
     protected static ?string $model = CodeFile::class;
@@ -37,10 +42,12 @@ final class CodeFileResource extends Resource
                         ->maxLength(255)
                         ->placeholder('ex: ArticleController.php')
                         ->live(onBlur: true)
+                        // Calcule et pré-remplit dynamiquement le chemin absolu du fichier
+                        // en concaténant le chemin du dossier parent sélectionné
                         ->afterStateUpdated(function ($state, $get, $set): void {
                             $folderId = $get('folder_id');
                             if ($folderId) {
-                                $folder = CodeFolder::find($folderId);
+                                $folder = CodeFolder::find($folderId, ['*']);
                                 if ($folder) {
                                     $set('path', rtrim($folder->path, '/').'/'.ltrim($state, '/'));
 
@@ -90,6 +97,7 @@ final class CodeFileResource extends Resource
                         ->columnSpanFull()
                         ->rows(20)
                         ->placeholder('Saisissez ou collez votre code ici...')
+                        // Personnalise l'input text-area pour donner l'apparence d'un éditeur de code simple (monospaced)
                         ->extraInputAttributes([
                             'class' => 'font-mono text-xs md:text-sm leading-relaxed bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 rounded-lg p-4',
                         ]),
