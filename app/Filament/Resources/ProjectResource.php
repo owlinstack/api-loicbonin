@@ -15,6 +15,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+/**
+ * Ressource Filament de gestion des projets du portfolio.
+ * Justification : Permet un CRUD complet sur les projets avec tri personnalisé (drag and drop)
+ * pour structurer l'affichage dynamique des réalisations sur le front-end.
+ */
 final class ProjectResource extends Resource
 {
     protected static ?string $model = Project::class;
@@ -34,6 +39,7 @@ final class ProjectResource extends Resource
                     Forms\Components\TextInput::make('title')
                         ->required()
                         ->maxLength(255)
+                        // Génère le slug à la volée lorsque le titre perd le focus (onBlur)
                         ->live(onBlur: true)
                         ->afterStateUpdated(fn ($state, $set) => $set('slug', str($state)->slug()->toString())
                         ),
@@ -92,6 +98,7 @@ final class ProjectResource extends Resource
                 Tables\Columns\TextColumn::make('live_url')
                     ->limit(30),
             ])
+            // Active la réorganisation des lignes par drag-and-drop en base (via la colonne sort_order)
             ->reorderable('sort_order')
             ->defaultSort('sort_order', 'asc')
             ->filters([

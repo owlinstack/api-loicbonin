@@ -15,6 +15,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+/**
+ * Ressource Filament pour gérer les catégories d'articles.
+ * Justification : Offre une taxonomie dynamique permettant d'organiser les articles
+ * sur le front-end avec décompte automatique des articles associés.
+ */
 final class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
@@ -55,6 +60,7 @@ final class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable()
                     ->sortable(),
+                // Charge automatiquement le décompte des relations (relation count query) sans problème N+1
                 Tables\Columns\TextColumn::make('articles_count')
                     ->counts('articles')
                     ->badge()

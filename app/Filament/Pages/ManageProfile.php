@@ -17,6 +17,11 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 
+/**
+ * Page d'administration sur mesure pour gérer le profil unique de développement.
+ * Justification : L'application n'ayant qu'un seul profil, utiliser une ressource CRUD classique
+ * serait superflu (anti-pattern). Cette page unique simplifie l'expérience d'administration.
+ */
 final class ManageProfile extends Page implements HasForms
 {
     use InteractsWithForms;
@@ -33,6 +38,11 @@ final class ManageProfile extends Page implements HasForms
 
     public ?array $data = [];
 
+    /**
+     * Hydrate le formulaire au chargement de la page.
+     * Si aucun profil n'existe en base de données, il en crée un par défaut
+     * pour assurer la cohérence de l'affichage avant d'alimenter le formulaire.
+     */
     public function mount(): void
     {
         $profile = Profile::query()->first() ?? Profile::query()->create([
@@ -117,6 +127,10 @@ final class ManageProfile extends Page implements HasForms
         ];
     }
 
+    /**
+     * Met à jour le profil unique en base de données.
+     * Récupère l'état validé du formulaire Filament et met à jour l'enregistrement existant.
+     */
     public function save(): void
     {
         $profile = Profile::query()->first();

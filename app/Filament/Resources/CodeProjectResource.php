@@ -15,6 +15,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+/**
+ * Ressource Filament pour gérer les dépôts/projets de code source présentés.
+ * Justification : Permet de configurer les projets de code qui servent de conteneurs
+ * aux dossiers et fichiers de l'arborescence interactive.
+ */
 final class CodeProjectResource extends Resource
 {
     protected static ?string $model = CodeProject::class;
@@ -61,6 +66,7 @@ final class CodeProjectResource extends Resource
                     ->searchable(),
                 Tables\Columns\ToggleColumn::make('is_published')
                     ->label('Publié'),
+                // Affiche le nombre de dossiers directement attachés sans surcharge SQL N+1
                 Tables\Columns\TextColumn::make('folders_count')
                     ->counts('folders')
                     ->badge()

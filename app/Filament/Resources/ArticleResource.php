@@ -16,6 +16,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+/**
+ * Ressource Filament de gestion des articles du blog.
+ * Justification : Gère le cycle de vie complet des articles (Markdown) et de leurs métadonnées,
+ * ainsi que la liaison conditionnelle exclusive à un élément de code source (fichier, dossier, projet).
+ */
 final class ArticleResource extends Resource
 {
     protected static ?string $model = Article::class;
@@ -115,6 +120,8 @@ final class ArticleResource extends Resource
                 ->icon('heroicon-o-code-bracket')
                 ->columns(1)
                 ->schema([
+                    // État virtuel et réactif pour gérer l'exclusion mutuelle des relations de code
+                    // (un article est lié soit à un fichier, soit à un dossier, soit à un projet, soit à rien)
                     Forms\Components\Select::make('code_type')
                         ->label('Type de liaison')
                         ->options([
