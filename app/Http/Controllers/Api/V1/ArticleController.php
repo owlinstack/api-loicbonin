@@ -12,6 +12,11 @@ use App\Services\ArticleService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Contrôleur API pour gérer les articles de blog.
+ * Justification : Expose les endpoints publics pour lister et afficher les articles,
+ * en assurant la transition entre la validation HTTP (FormRequest) et la couche Service.
+ */
 final class ArticleController extends Controller
 {
     public function __construct(
@@ -20,14 +25,20 @@ final class ArticleController extends Controller
         //
     }
 
+    /**
+     * Liste les articles publiés avec pagination et filtres optionnels.
+     */
     public function index(ListArticlesRequest $request): ArticleCollection
     {
         $validated = $request->validated();
 
-        $category = (isset($validated['category']) && \is_string($validated['category'])) ? $validated['category'] : null;
-        $tag = (isset($validated['tag']) && \is_string($validated['tag'])) ? $validated['tag'] : null;
-        $page = (isset($validated['page']) && \is_int($validated['page'])) ? $validated['page'] : 1;
-        $pageSize = (isset($validated['pageSize']) && \is_int($validated['pageSize'])) ? $validated['pageSize'] : 10;
+        // Extraction et typage explicite (type casting) pour satisfaire PHPStan
+        // et sécuriser les types de paramètres reçus sous forme de chaînes de l'URL
+
+        $category = isset($validated['category']) ? (string) $validated['category'] : null;
+        $tag = isset($validated['tag']) ? (string) $validated['tag'] : null;
+        $page = isset($validated['page']) ? (int) $validated['page'] : 1;
+        $pageSize = isset($validated['pageSize']) ? (int) $validated['pageSize'] : 10;
 
         $paginated = $this->articleService->listPublished(
             category: $category,
@@ -39,6 +50,9 @@ final class ArticleController extends Controller
         return new ArticleCollection($paginated);
     }
 
+    /**
+     * Affiche un article individuel recherché par son slug.
+     */
     public function show(string $slug): ArticleResource|JsonResponse
     {
         $article = $this->articleService->findBySlug($slug);
