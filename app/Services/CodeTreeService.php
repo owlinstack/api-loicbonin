@@ -25,6 +25,12 @@ final class CodeTreeService
      */
     public function getFullTree(): array
     {
+        /** @var array<int, string> $publishedProjectIds */
+        $publishedProjectIds = CodeProject::query()
+            ->where('is_published', true)
+            ->pluck('id')
+            ->all();
+
         /** @var Collection<int, CodeFolder> $allFolders */
         $allFolders = CodeFolder::with('parent')->orderBy('sort_order')->get();
 
@@ -32,6 +38,15 @@ final class CodeTreeService
         $allFiles = CodeFile::with('linkedArticle')
             ->orderBy('sort_order')
             ->get();
+
+        // Sécurité : exclut les dossiers liés à des projets non publiés (fuite d'information)
+        $allFolders = $this->filterFoldersByPublishedProjects($allFolders, $publishedProjectIds);
+        $validFolderIds = $allFolders->pluck('id')->all();
+
+        // Exclut les fichiers appartenant aux dossiers filtrés
+        $allFiles = $allFiles->filter(
+            fn (CodeFile $file) => $file->folder_id === null || \in_array($file->folder_id, $validFolderIds, true),
+        );
 
         $rootFolders = $allFolders->filter(fn (CodeFolder $folder) => ! $folder->parent_id);
         $rootFiles = $allFiles->filter(fn (CodeFile $file) => ! $file->folder_id);
@@ -48,6 +63,42 @@ final class CodeTreeService
             $this->buildFolderTreeFromMemory($rootFolders, $foldersGrouped, $filesGrouped),
             $this->mapFiles($rootFiles),
         );
+    }
+
+    /**
+     * Filtre une collection de dossiers pour exclure ceux liés à des projets non publiés,
+     * en propageant l'exclusion récursivement à tous les sous-dossiers enfants.
+     *
+     * @param  Collection<int, CodeFolder>  $allFolders
+     * @param  array<int, string>  $publishedProjectIds
+     * @return Collection<int, CodeFolder>
+     */
+    private function filterFoldersByPublishedProjects(Collection $allFolders, array $publishedProjectIds): Collection
+    {
+        // Identifie les dossiers racines des projets non publiés
+        $invalidFolderIds = $allFolders
+            ->filter(fn (CodeFolder $f) => $f->code_project_id !== null && ! \in_array($f->code_project_id, $publishedProjectIds, true))
+            ->pluck('id')
+            ->values()
+            ->all();
+
+        if (empty($invalidFolderIds)) {
+            return $allFolders;
+        }
+
+        // Propage récursivement l'exclusion aux sous-dossiers
+        $changed = true;
+        while ($changed) {
+            $changed = false;
+            foreach ($allFolders as $folder) {
+                if (! \in_array($folder->id, $invalidFolderIds, true) && \in_array($folder->parent_id, $invalidFolderIds, true)) {
+                    $invalidFolderIds[] = $folder->id;
+                    $changed = true;
+                }
+            }
+        }
+
+        return $allFolders->reject(fn (CodeFolder $f) => \in_array($f->id, $invalidFolderIds, true));
     }
 
     /**
@@ -179,15 +230,58 @@ final class CodeTreeService
 
     /**
      * Récupère un fichier de code par son chemin avec son article lié.
+     * Sécurité : retourne null si le fichier appartient à un projet non publié (fuite d'information).
      */
     public function getFileByPath(string $path): ?CodeFile
     {
         /** @var CodeFile|null $file */
         $file = CodeFile::query()
-            ->with('linkedArticle')
+            ->with(['linkedArticle', 'folder'])
             ->where('path', $path)
             ->first();
 
+        if ($file === null) {
+            return null;
+        }
+
+        // Vérifie que le fichier appartient à un projet publié
+        if (! $this->isFileAccessible($file)) {
+            return null;
+        }
+
         return $file;
+    }
+
+    /**
+     * Détermine si un fichier est accessible publiquement.
+     * Remonte l'arborescence des dossiers jusqu'au projet associé et vérifie son statut de publication.
+     * Un fichier sans projet parent est considéré accessible (dossier global).
+     */
+    private function isFileAccessible(CodeFile $file): bool
+    {
+        $folder = $file->folder;
+
+        // Fichier sans dossier parent : accessible (fichier global)
+        if ($folder === null) {
+            return true;
+        }
+
+        // Remonte l'arborescence pour trouver le projet associé
+        $current = $folder;
+        while ($current !== null) {
+            if ($current->code_project_id !== null) {
+                // Vérifie en base si ce projet est bien publié
+                return CodeProject::query()
+                    ->where('id', $current->code_project_id)
+                    ->where('is_published', true)
+                    ->exists();
+            }
+
+            $current->loadMissing('parent');
+            $current = $current->parent;
+        }
+
+        // Aucun projet trouvé dans l'arborescence : dossier global, accessible
+        return true;
     }
 }
