@@ -46,6 +46,14 @@ final class ListArticlesRequest extends FormRequest
             return [];
         }
 
+        if (isset($validated['page'])) {
+            $validated['page'] = (int) $validated['page'];
+        }
+
+        if (isset($validated['pageSize'])) {
+            $validated['pageSize'] = (int) $validated['pageSize'];
+        }
+
         /** @var array{category?: string|null, tag?: string|null, page?: int|null, pageSize?: int|null} $validated */
         return $validated;
     }

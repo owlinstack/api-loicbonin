@@ -46,6 +46,7 @@ final class ArticleService
     {
         return Article::query()
             ->where('status', ArticleStatus::Published)
+            ->where(fn ($q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()))
             ->where('slug', $slug)
             ->with([
                 'category',
