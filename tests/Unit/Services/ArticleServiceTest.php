@@ -89,6 +89,88 @@ final class ArticleServiceTest extends TestCase
         $this->assertEqualsCanonicalizing(['article-passe', 'article-immediat'], collect($results->items())->pluck('slug')->all());
     }
 
+    public function test_list_published_excludes_archived_articles(): void
+    {
+        Article::create([
+            'title' => 'Article Archivé',
+            'slug' => 'article-archive',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->catBackend->id,
+            'status' => ArticleStatus::Archived,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+
+        Article::create([
+            'title' => 'Article Publié',
+            'slug' => 'article-publie',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->catBackend->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+
+        /** @var LengthAwarePaginator<int, Article> $results */
+        $results = $this->articleService->listPublished();
+
+        $this->assertCount(1, $results->items());
+        $this->assertEquals('article-publie', collect($results->items())->first()?->slug);
+    }
+
+    public function test_list_published_filters_by_category_and_tag_combined(): void
+    {
+        $tagPhp = Tag::create(['name' => 'PHP']);
+        $tagJs = Tag::create(['name' => 'JS']);
+
+        // Backend + PHP : doit apparaître
+        $artBackendPhp = Article::create([
+            'title' => 'Backend PHP',
+            'slug' => 'backend-php',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->catBackend->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+        $artBackendPhp->tags()->sync([$tagPhp->id]);
+
+        // Backend + JS : ne doit pas apparaître (mauvais tag)
+        $artBackendJs = Article::create([
+            'title' => 'Backend JS',
+            'slug' => 'backend-js',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->catBackend->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+        $artBackendJs->tags()->sync([$tagJs->id]);
+
+        // Frontend + PHP : ne doit pas apparaître (mauvaise catégorie)
+        $artFrontendPhp = Article::create([
+            'title' => 'Frontend PHP',
+            'slug' => 'frontend-php',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->catFrontend->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+        $artFrontendPhp->tags()->sync([$tagPhp->id]);
+
+        /** @var LengthAwarePaginator<int, Article> $results */
+        $results = $this->articleService->listPublished(category: 'backend', tag: 'PHP');
+
+        $this->assertCount(1, $results->items());
+        $this->assertEquals('backend-php', collect($results->items())->first()?->slug);
+    }
+
     public function test_list_published_filters_by_category(): void
     {
         Article::create([
@@ -255,6 +337,25 @@ final class ArticleServiceTest extends TestCase
     public function test_find_by_slug_returns_null_when_article_not_found(): void
     {
         $found = $this->articleService->findBySlug('non-existent');
+
+        $this->assertNull($found);
+    }
+
+    public function test_find_by_slug_returns_null_for_future_scheduled_article(): void
+    {
+        Article::create([
+            'title' => 'Article Futur',
+            'slug' => 'article-futur',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->catBackend->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->addDay(),
+        ]);
+
+        // Un article publié mais planifié dans le futur ne doit pas être accessible
+        $found = $this->articleService->findBySlug('article-futur');
 
         $this->assertNull($found);
     }

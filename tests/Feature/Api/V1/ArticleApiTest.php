@@ -72,6 +72,9 @@ final class ArticleApiTest extends TestCase
                         'publishedAt',
                         'readingTime',
                         'featured',
+                        'codeFile',
+                        'codeFolder',
+                        'codeProject',
                     ],
                 ],
                 'total',
@@ -81,6 +84,37 @@ final class ArticleApiTest extends TestCase
 
         $response->assertJsonFragment(['slug' => 'article-publie']);
         $response->assertJsonMissing(['slug' => 'article-brouillon']);
+    }
+
+    public function test_list_does_not_return_future_scheduled_articles(): void
+    {
+        Article::create([
+            'title' => 'Article Futur',
+            'slug' => 'article-futur',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->addDay(),
+        ]);
+
+        Article::create([
+            'title' => 'Article Visible',
+            'slug' => 'article-visible',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subHour(),
+        ]);
+
+        $response = $this->getJson('/api/v1/articles');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['slug' => 'article-visible'])
+            ->assertJsonMissing(['slug' => 'article-futur']);
     }
 
     public function test_can_filter_articles_by_category(): void
@@ -202,6 +236,26 @@ final class ArticleApiTest extends TestCase
         $response = $this->getJson('/api/v1/articles/brouillon');
 
         $response->assertStatus(404);
+    }
+
+    public function test_cannot_get_future_scheduled_article(): void
+    {
+        Article::create([
+            'title' => 'Article Futur',
+            'slug' => 'article-futur',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $this->category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->addDay(),
+        ]);
+
+        // Un article planifié dans le futur ne doit pas être accessible via l'endpoint
+        $response = $this->getJson('/api/v1/articles/article-futur');
+
+        $response->assertStatus(404)
+            ->assertJsonPath('message', 'Article not found');
     }
 
     public function test_article_returns_code_file_relationship(): void

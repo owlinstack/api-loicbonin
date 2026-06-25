@@ -102,4 +102,36 @@ final class ProfileServiceTest extends TestCase
         $this->assertFalse($data->showEducation);
         $this->assertNull($data->education);
     }
+
+    public function test_get_profile_data_toggles_are_independent(): void
+    {
+        Profile::query()->delete();
+
+        Profile::create([
+            'name' => 'Jean Michel Asymétrique',
+            'bio' => 'Bio',
+            'skills' => [],
+            'timeline' => [
+                ['date' => '2026', 'title' => 'Job', 'description' => 'Desc'],
+            ],
+            'education' => [
+                ['date' => '2020', 'title' => 'Master', 'description' => 'School'],
+            ],
+            'show_timeline' => false,  // masquée
+            'show_education' => true,  // visible
+            'cv_url' => null,
+            'avatar_url' => null,
+        ]);
+
+        $data = $this->profileService->getProfileData();
+
+        // timeline est masquée
+        $this->assertFalse($data->showTimeline);
+        $this->assertNull($data->timeline);
+
+        // education reste visible
+        $this->assertTrue($data->showEducation);
+        $this->assertNotNull($data->education);
+        $this->assertCount(1, $data->education);
+    }
 }

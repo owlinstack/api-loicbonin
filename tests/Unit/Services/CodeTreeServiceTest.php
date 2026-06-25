@@ -179,4 +179,109 @@ final class CodeTreeServiceTest extends TestCase
         $this->assertEquals('app', $treeB[0]['name']);
         $this->assertEquals('index.php', $treeB[0]['children'][0]['name']);
     }
+
+    public function test_get_full_tree_handles_multiple_root_folders(): void
+    {
+        // Deux dossiers racines indépendants
+        $folderA = CodeFolder::create([
+            'name' => 'app',
+            'path' => 'app',
+            'sort_order' => 1,
+        ]);
+
+        $folderB = CodeFolder::create([
+            'name' => 'config',
+            'path' => 'config',
+            'sort_order' => 2,
+        ]);
+
+        CodeFile::create([
+            'name' => 'Kernel.php',
+            'path' => 'app/Kernel.php',
+            'language' => 'php',
+            'content' => 'class Kernel {}',
+            'folder_id' => $folderA->id,
+            'sort_order' => 1,
+        ]);
+
+        CodeFile::create([
+            'name' => 'app.php',
+            'path' => 'config/app.php',
+            'language' => 'php',
+            'content' => '<?php return [];',
+            'folder_id' => $folderB->id,
+            'sort_order' => 1,
+        ]);
+
+        $tree = $this->codeTreeService->getFullTree();
+
+        // Les deux dossiers racines doivent être présents au premier niveau
+        $this->assertCount(2, $tree);
+
+        $names = array_column($tree, 'name');
+        $this->assertContains('app', $names);
+        $this->assertContains('config', $names);
+
+        // Vérification des enfants
+        $appNode = collect($tree)->firstWhere('name', 'app');
+        $this->assertNotNull($appNode);
+        $this->assertCount(1, $appNode['children']);
+        $this->assertEquals('Kernel.php', $appNode['children'][0]['name']);
+
+        $configNode = collect($tree)->firstWhere('name', 'config');
+        $this->assertNotNull($configNode);
+        $this->assertCount(1, $configNode['children']);
+        $this->assertEquals('app.php', $configNode['children'][0]['name']);
+    }
+
+    public function test_get_project_tree_resolves_deeply_nested_folders_without_direct_project_id(): void
+    {
+        // Seul le dossier racine a code_project_id ; les niveaux 2 et 3 n'ont pas de code_project_id
+        $project = CodeProject::create([
+            'name' => 'Deep Project',
+            'slug' => 'deep-project',
+            'description' => 'Test imbrication profonde',
+        ]);
+
+        $level1 = CodeFolder::create([
+            'name' => 'root',
+            'path' => 'root',
+            'code_project_id' => $project->id,
+            'sort_order' => 1,
+        ]);
+
+        // level2 n'a PAS de code_project_id — résolu via l'ancêtre en mémoire
+        $level2 = CodeFolder::create([
+            'name' => 'lib',
+            'path' => 'root/lib',
+            'parent_id' => $level1->id,
+            'sort_order' => 1,
+        ]);
+
+        // level3 non plus
+        $level3 = CodeFolder::create([
+            'name' => 'utils',
+            'path' => 'root/lib/utils',
+            'parent_id' => $level2->id,
+            'sort_order' => 1,
+        ]);
+
+        CodeFile::create([
+            'name' => 'helpers.ts',
+            'path' => 'root/lib/utils/helpers.ts',
+            'language' => 'typescript',
+            'content' => 'export const noop = () => {};',
+            'folder_id' => $level3->id,
+            'sort_order' => 1,
+        ]);
+
+        $tree = $this->codeTreeService->getProjectTree($project);
+
+        // Toute la hiérarchie doit être présente même sans code_project_id sur les enfants
+        $this->assertCount(1, $tree);
+        $this->assertEquals('root', $tree[0]['name']);
+        $this->assertEquals('lib', $tree[0]['children'][0]['name']);
+        $this->assertEquals('utils', $tree[0]['children'][0]['children'][0]['name']);
+        $this->assertEquals('helpers.ts', $tree[0]['children'][0]['children'][0]['children'][0]['name']);
+    }
 }

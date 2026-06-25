@@ -377,11 +377,11 @@ final class GeneralApiTest extends TestCase
         $treeResponse2->assertStatus(200);
     }
 
-    public function test_category_resource_resolves_count_fallback_without_eager_loading(): void
+    public function test_categories_count_only_published_articles(): void
     {
         $category = Category::create(['slug' => 'rust', 'label' => 'Rust']);
 
-        // Create 2 published articles under Rust
+        // 2 articles publiés
         Article::create([
             'title' => 'Article Rust 1',
             'slug' => 'article-rust-1',
@@ -404,13 +404,68 @@ final class GeneralApiTest extends TestCase
             'published_at' => now()->subDay(),
         ]);
 
-        // Instantiate CategoryResource without articles_count attribute (so it hits fallback)
+        // 1 brouillon qui ne doit pas être compté
+        Article::create([
+            'title' => 'Article Rust Draft',
+            'slug' => 'article-rust-draft',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $category->id,
+            'status' => ArticleStatus::Draft,
+            'reading_time' => 3,
+            'published_at' => null,
+        ]);
+
+        $response = $this->getJson('/api/v1/categories');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'slug' => 'rust',
+                'label' => 'Rust',
+                'count' => 2, // Seuls les articles publiés sont comptés
+            ]);
+    }
+
+    public function test_category_resource_count_fallback_when_articles_count_not_loaded(): void
+    {
+        // Ce test valide le mécanisme de fallback de CategoryResource :
+        // Si articles_count n'est pas chargé (ex: usage hors endpoint),
+        // la resource recalcule le count via articles()->count().
+        // Note : Le controller utilise toujours withCount(), donc ce fallback
+        // ne se déclenche pas dans le flux HTTP normal. Il est testé en isolation
+        // pour garantir la robustesse de la resource elle-même.
+        $category = Category::create(['slug' => 'rust', 'label' => 'Rust']);
+
+        Article::create([
+            'title' => 'Article Rust 1',
+            'slug' => 'article-rust-1',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+
+        Article::create([
+            'title' => 'Article Rust 2',
+            'slug' => 'article-rust-2',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'category_id' => $category->id,
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+
+        // Instancie la resource SANS articles_count (sans withCount)
         $resource = new CategoryResource($category);
         $request = Request::create('/api/v1/categories', 'GET');
         $data = $resource->toArray($request);
 
         $this->assertEquals('rust', $data['slug']);
         $this->assertEquals('Rust', $data['label']);
-        $this->assertEquals(2, $data['count']); // Checks that count resolves to 2 using articles()->count()
+        // Le fallback articles()->count() doit renvoyer le total (publiés + brouillons ici)
+        $this->assertEquals(2, $data['count']);
     }
 }
