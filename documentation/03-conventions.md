@@ -50,6 +50,12 @@ Analyseur de code statique configuré au **Niveau 8** (le niveau le plus strict 
 
 - Tous les chemins de code doivent être exempts d'erreurs de typage.
 - Le dossier `app/Filament/` est exclu de l'analyse car Filament génère des liaisons magiques dynamiques incompatibles avec le niveau 8 de PHPStan.
+- Le plugin `phpat/phpat` est activé dans `phpstan.neon` pour faire tourner les tests d'architecture en même temps que l'analyse statique.
+
+```bash
+# Lance l'analyse statique ET les tests d'architecture en une seule commande
+./vendor/bin/phpstan analyse
+```
 
 ---
 
@@ -73,6 +79,14 @@ Les requêtes cross-origin vers l'API sont strictement restreintes aux domaines 
 ### 3. Limiteur de Débit (Rate Limiting)
 
 Toutes les routes de l'API sont protégées contre le déni de service et le spam à l'aide du middleware `throttle:api` configuré à **60 requêtes par minute** par adresse IP dans `AppServiceProvider.php`.
+
+### 4. Filtrage des Projets de Code Non Publiés
+
+L'endpoint `GET /api/v1/code/files/{path}` et `GET /api/v1/code/tree` doivent impérativement filtrer les données appartenant aux projets de code dont `is_published = false`.
+
+- **Règle** : `CodeTreeService::getFileByPath()` doit remonter l'arborescence des dossiers pour vérifier que le projet parent est publié avant de retourner un fichier. Si ce n'est pas le cas, il retourne `null` (→ HTTP 404).
+- **Règle** : `CodeTreeService::getFullTree()` doit exclure de l'arborescence tous les dossiers et fichiers appartenant à un projet non publié, y compris leurs sous-dossiers.
+- **Raison** : Sans ce filtrage, un attaquant connaissant le chemin d'un fichier pourrait lire le code source d'un projet encore en brouillon via l'API publique (fuite d'information / Information Disclosure).
 
 ---
 
@@ -131,3 +145,34 @@ Lorsqu'un parcours d'arborescence récursif (comme la remontée des parents d'un
 * Résoudre la valeur récursivement en stockant le résultat dans le tableau statique pour la clé correspondante (ex: `self::$projectSlugCache[$this->id]`).
 * Grâce au cycle de vie de PHP-FPM, ce cache est vidé automatiquement à la fin de chaque requête HTTP, éliminant les requêtes redondantes sur un même élément durant la sérialisation sans risque de persistance obsolète entre les requêtes.
 
+---
+
+## 🧪 Stratégie de Tests
+
+L'application applique une stratégie de tests à trois niveaux, chacun vérifiants des contrats différents.
+
+### Niveau 1 — Tests d'Architecture (`tests/Architecture/`)
+
+Vérifiés via `phpat/phpat` à chaque passage de PHPStan. Ces tests garantissent que les règles de découplage des couches sont respectées en permanence.
+
+| Règle | Description |
+| :---- | :---------- |
+| Modèles → pas de Services ni HTTP | Un Modèle ne peut pas importer un Service ou quoi que ce soit de la couche HTTP. |
+| Services → pas de HTTP | Un Service ne peut pas importer un Controller, une Request ou une Resource. |
+| Contrôleurs → pas de Modèles | Un Controller ne peut pas importer directement un Modèle Eloquent. |
+
+### Niveau 2 — Tests de Contrat / Snapshot (`tests/Feature/Api/V1/Snapshots/`)
+
+Vérifiés via `spatie/phpunit-snapshot-assertions`. Ces tests verrouillent la **structure exacte** des réponses JSON retournées par l'API. Toute modification involontaire de la forme d'une réponse (renommage de clé, suppression de champ) fait échouer le test avant que le frontend Next.js ne soit impacté.
+
+**Règle concernant les ULIDs dans les snapshots** : Les ULIDs sont générés aléatoirement par `HasUlids`. Pour rendre les snapshots déterministes, tous les tests Snapshot doivent utiliser la méthode utilitaire `assertMatchesJsonSnapshotWithNormalizedIds()` définie dans la classe de test, qui remplace toutes les chaînes ULID par une valeur fixe (`00000000000000000000000000`) avant la comparaison.
+
+```bash
+# Régénérer les snapshots après un changement intentionnel de contrat d'API
+./vendor/bin/phpunit --filter=Snapshot -d --update-snapshots
+```
+
+### Niveau 3 — Tests Unitaires & Feature (`tests/Unit/` & `tests/Feature/`)
+
+* **Tests Unitaires** (`tests/Unit/Services/`) : Chaque service dispose de son propre fichier de tests unitaires validant sa logique métier en isolation (base `RefreshDatabase`).
+* **Tests Feature** (`tests/Feature/Api/V1/`) : Tests d'intégration HTTP de bout en bout vérifiant les routes, les codes de statut, les structures de réponse et les règles de sécurité (CORS, rate limiting, accès aux projets non publiés).

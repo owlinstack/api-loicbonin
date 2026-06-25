@@ -15,6 +15,14 @@ Ce document liste la pile technologique (stack) du backend, les versions majeure
 | **PHPStan**      | `^2.x`  | Analyseur statique (avec Larastan).        | Garantie de la sécurité des types au niveau 8, réduction des erreurs d'exécution en vérifiant les chemins d'exécution et méthodes.          |
 | **Laravel Pint** | `^1.x`  | Formateur de code automatique.             | Uniformisation du style de programmation (PSR-12 amélioré avec typage strict forcé, méthodes finales et retours void).                      |
 
+### Packages de Qualité et Tests (dev)
+
+| Package                                | Version   | Rôle                                 | Justification                                                                                                                                    |
+| :------------------------------------- | :-------- | :----------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **phpat/phpat**                        | `^0.11`   | Tests d'architecture (via PHPStan).  | Vérifie à la compilation que les règles de découplage des couches sont respectées (ex: les Contrôleurs n'appellent pas directement les Modèles). |
+| **spatie/phpunit-snapshot-assertions** | `^5.x`    | Tests de contrat (Contract Testing). | Verrouille la structure exacte des réponses JSON de l'API pour détecter toute régression de contrat avant qu'elle n'impacte le frontend Next.js. |
+| **pcov**                               | extension | Couverture de code (Code Coverage).  | Extension PHP native et rapide pour générer les rapports de couverture PHPUnit.                                                                  |
+
 ---
 
 ## 💡 Principes de Conception Technique
@@ -42,3 +50,13 @@ Le backend sert exclusivement d'API REST stateless au frontend Next.js :
 
 - L'authentification utilise un limiteur de débit (`throttle:api`) pour bloquer les requêtes abusives.
 - Les données de l'API sont servies sous forme de collections plates sans enveloppe de données inutile (surcharge de `toResponse` sur les Resource Collections) pour que le frontend Next.js puisse valider directement avec des schémas Zod à plat.
+
+### 4. Architecture en Couches Stricte (Layered Architecture)
+
+L'application respecte une séparation stricte des couches, vérifiée automatiquement par les tests d'architecture (`phpat/phpat` via PHPStan) :
+
+- **Les Contrôleurs** ne doivent jamais appeler directement les Modèles Eloquent. Ils délèguent à leurs Services respectifs.
+- **Les Services** ne doivent jamais dépendre de la couche HTTP (Controllers, Requests, Resources).
+- **Les Modèles** ne doivent jamais dépendre des Services ou de la couche HTTP.
+
+Ces règles sont validées à chaque passage de `./vendor/bin/phpstan analyse` et constituent un filet de sécurité contre les régressions architecturales.

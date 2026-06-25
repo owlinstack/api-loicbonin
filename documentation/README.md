@@ -1,6 +1,6 @@
 # Documentation Technique Backend — ApiLoicBonin
 
-Bienvenue dans la documentation technique du backend de l'application **loicbonin.com**. Ce projet sert d'API REST stateless au frontend Next.js et intègre un panel d'administration pour la gestion du contenu. Il est construit sur les standards modernes de Laravel 13 et PHP 8.3+.
+Bienvenue dans la documentation technique du backend de l'application **loicbonin.com**. Ce projet sert d'API REST stateless au frontend Next.js et intègre un panel d'administration pour la gestion du contenu. Il est construit sur les standards modernes de Laravel 13 et PHP 8.4+.
 
 ---
 
@@ -8,7 +8,7 @@ Bienvenue dans la documentation technique du backend de l'application **loicboni
 
 Pour faciliter la prise en main et la maintenance du projet, voici le découpage de la documentation technique :
 
-| **01** | [Stack Technique](01-stack.md) | Pile technologique (Laravel 13, Filament v5, PHP 8.3+, SQLite/PostgreSQL, PHPStan, Laravel Pint). |
+| **01** | [Stack Technique](01-stack.md) | Pile technologique (Laravel 13, Filament v5, PHP 8.4+, SQLite/PostgreSQL, PHPStan, Laravel Pint). |
 | **02** | [Architecture & Structure](02-architecture.md) | Couches applicatives (Contrôleurs, Services, DTOs, Enums, Models) et flux de données. |
 | **03** | [Normes & Conventions](03-conventions.md) | Règles de typage strict, classes finales, sécurité (CORS & Rate Limiter), et standardisation du code (Pint/PHPStan). |
 | **04** | [Administration Filament](04-filament-admin.md) | Configuration du panel d'administration (AdminCreator), ressources CRUD, et formulaires sur-mesure (éditeurs de code/texte). |
@@ -19,7 +19,7 @@ Pour faciliter la prise en main et la maintenance du projet, voici le découpage
 
 ### Prérequis
 
-- **PHP** : version `8.3` (ou supérieure).
+- **PHP** : version `8.4` (ou supérieure).
 - **Composer** : gestionnaire de dépendances PHP officiel.
 - **SQLite** : installé localement pour la base de données de développement.
 
