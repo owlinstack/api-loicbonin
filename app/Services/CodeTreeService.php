@@ -149,4 +149,45 @@ final class CodeTreeService
             'linkedArticleTitle' => $f->linkedArticle?->title,
         ])->toArray());
     }
+
+    /**
+     * Récupère tous les projets de code publiés triés par nom.
+     *
+     * @return Collection<int, CodeProject>
+     */
+    public function listPublishedProjects(): Collection
+    {
+        return CodeProject::query()
+            ->where('is_published', true)
+            ->orderBy('name', 'asc')
+            ->get();
+    }
+
+    /**
+     * Récupère un projet de code par son slug s'il est publié.
+     */
+    public function getProjectBySlug(string $slug): ?CodeProject
+    {
+        /** @var CodeProject|null $project */
+        $project = CodeProject::query()
+            ->where('slug', $slug)
+            ->where('is_published', true)
+            ->first();
+
+        return $project;
+    }
+
+    /**
+     * Récupère un fichier de code par son chemin avec son article lié.
+     */
+    public function getFileByPath(string $path): ?CodeFile
+    {
+        /** @var CodeFile|null $file */
+        $file = CodeFile::query()
+            ->with('linkedArticle')
+            ->where('path', $path)
+            ->first();
+
+        return $file;
+    }
 }

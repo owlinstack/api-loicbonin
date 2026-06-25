@@ -6,15 +6,13 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CodeFileResource;
-use App\Models\CodeFile;
-use App\Models\CodeProject;
 use App\Services\CodeTreeService;
 use Illuminate\Http\JsonResponse;
 
 /**
  * Contrôleur API pour la navigation dans l'arborescence des projets et fichiers de code.
  * Justification : Expose les structures de dossiers/fichiers interactives (tree) pour le front-end,
- * ainsi que le contenu individuel des fichiers sources.
+ * ainsi que le contenu individuel des fichiers sources, en déléguant tout l'accès aux données à CodeTreeService.
  */
 final class CodeController extends Controller
 {
@@ -33,13 +31,13 @@ final class CodeController extends Controller
 
     /**
      * Retourne la liste des projets de code publiés (version allégée sans l'arborescence).
-     * Choix : Le mappage manuel évite de charger récursivement les dossiers racine pour chaque projet, optimisant les performances.
+     * Choix : Utilise CodeTreeService pour lister les projets publiés et formater la sortie.
      */
     public function projects(): JsonResponse
     {
-        $projects = CodeProject::query()->where('is_published', true)->orderBy('name', 'asc')->get();
+        $projects = $this->codeTreeService->listPublishedProjects();
 
-        return response()->json($projects->map(fn (CodeProject $p) => [
+        return response()->json($projects->map(fn ($p) => [
             'id' => $p->id,
             'name' => $p->name,
             'slug' => $p->slug,
@@ -49,25 +47,30 @@ final class CodeController extends Controller
 
     /**
      * Retourne l'arborescence des répertoires spécifique à un projet identifié par son slug.
-     * Choix : Utilise CodeTreeService après avoir sécurisé l'accès au projet publié via firstOrFail().
+     * Choix : Utilise CodeTreeService et lève une exception 404 si le projet est introuvable ou non publié.
      */
     public function projectTree(string $slug): JsonResponse
     {
-        $project = CodeProject::query()->where('slug', $slug)->where('is_published', true)->firstOrFail();
+        $project = $this->codeTreeService->getProjectBySlug($slug);
+
+        if ($project === null) {
+            abort(404);
+        }
 
         return response()->json($this->codeTreeService->getProjectTree($project));
     }
 
     /**
      * Retourne les détails et le contenu d'un fichier de code source spécifique.
-     * Choix : Eager loading de linkedArticle pour lier facilement le code à son explication textuelle (blog).
+     * Choix : Utilise CodeTreeService et lève 404 si le fichier n'existe pas.
      */
     public function show(string $path): CodeFileResource
     {
-        $file = CodeFile::query()
-            ->with('linkedArticle')
-            ->where('path', $path)
-            ->firstOrFail();
+        $file = $this->codeTreeService->getFileByPath($path);
+
+        if ($file === null) {
+            abort(404);
+        }
 
         return new CodeFileResource($file);
     }
