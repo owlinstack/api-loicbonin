@@ -4,12 +4,33 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
+/**
+ * Modèle représentant un dossier de code source dans l'arborescence d'un projet.
+ * Justification : Modélise les relations récursives de l'arborescence (dossiers parents/enfants et fichiers enfants),
+ * avec un système de cache interne pour la résolution du slug du projet associé.
+ *
+ * @property string $id
+ * @property string $name
+ * @property string $path
+ * @property string|null $parent_id
+ * @property string|null $code_project_id
+ * @property int $sort_order
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read CodeFolder|null $parent
+ * @property-read Collection<int, CodeFolder> $children
+ * @property-read Collection<int, CodeFile> $files
+ * @property-read CodeProject|null $codeProject
+ * @property-read Article|null $linkedArticle
+ */
 final class CodeFolder extends Model
 {
     use HasUlids;

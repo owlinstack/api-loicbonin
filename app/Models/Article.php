@@ -5,11 +5,39 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ArticleStatus;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * Modèle représentant un article de blog.
+ * Justification : Gère le contenu éditorial du blog avec un statut de publication (brouillon/publié),
+ * prend en charge l'association aux catégories/mots-clés, et se lie optionnellement à un fichier ou projet de code.
+ *
+ * @property string $id
+ * @property string $slug
+ * @property string $title
+ * @property string $excerpt
+ * @property string $content
+ * @property string|null $category_id
+ * @property ArticleStatus $status
+ * @property int $reading_time
+ * @property bool $featured
+ * @property Carbon|null $published_at
+ * @property string|null $code_file_id
+ * @property string|null $code_folder_id
+ * @property string|null $code_project_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Category|null $category
+ * @property-read Collection<int, Tag> $tags
+ * @property-read CodeFile|null $codeFile
+ * @property-read CodeFolder|null $codeFolder
+ * @property-read CodeProject|null $codeProject
+ */
 final class Article extends Model
 {
     use HasUlids;
