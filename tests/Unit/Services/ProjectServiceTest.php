@@ -22,7 +22,7 @@ final class ProjectServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->projectService = new ProjectService();
+        $this->projectService = new ProjectService;
     }
 
     /**

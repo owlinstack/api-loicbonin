@@ -24,7 +24,7 @@ final class CategoryServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->categoryService = new CategoryService();
+        $this->categoryService = new CategoryService;
     }
 
     /**
