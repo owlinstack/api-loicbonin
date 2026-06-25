@@ -1,0 +1,29 @@
+{
+    "name": "Loïc Bonin de BDD",
+    "bio": "Ma super bio personnalisée en base de données.",
+    "skills": [
+        "PHP",
+        "Laravel",
+        "Docker",
+        "NextJS"
+    ],
+    "showTimeline": true,
+    "timeline": [
+        {
+            "year": "2026",
+            "title": "Dev senior",
+            "company": "MyCompany",
+            "description": "Super job."
+        }
+    ],
+    "showEducation": true,
+    "education": [
+        {
+            "year": "2020",
+            "degree": "Master",
+            "school": "MySchool"
+        }
+    ],
+    "cvUrl": "/cv-loic-bonin.pdf",
+    "avatarUrl": null
+}

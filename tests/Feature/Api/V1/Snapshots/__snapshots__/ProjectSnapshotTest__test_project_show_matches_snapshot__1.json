@@ -1,0 +1,15 @@
+{
+    "id": "00000000000000000000000000",
+    "slug": "projet-individuel",
+    "title": "Projet Individuel",
+    "description": "Description.",
+    "longDescription": "Description longue.",
+    "techStack": [
+        "NextJS",
+        "TypeScript"
+    ],
+    "liveUrl": null,
+    "repoUrl": null,
+    "featured": false,
+    "year": "2025"
+}

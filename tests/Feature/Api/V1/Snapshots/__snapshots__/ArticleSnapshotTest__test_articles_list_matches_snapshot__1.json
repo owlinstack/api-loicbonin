@@ -1,0 +1,24 @@
+{
+    "articles": [
+        {
+            "id": "00000000000000000000000000",
+            "slug": "mon-super-article-de-test",
+            "title": "Mon Super Article de Test",
+            "excerpt": "Résumé de l'article.",
+            "content": "Contenu détaillé de l'article.",
+            "category": "tech",
+            "tags": [
+                "Laravel"
+            ],
+            "publishedAt": "2026-06-25",
+            "readingTime": 5,
+            "featured": false,
+            "codeFile": null,
+            "codeFolder": null,
+            "codeProject": null
+        }
+    ],
+    "total": 1,
+    "page": 1,
+    "pageSize": 10
+}

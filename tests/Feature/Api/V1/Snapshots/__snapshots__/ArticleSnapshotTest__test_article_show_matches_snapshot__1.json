@@ -1,0 +1,15 @@
+{
+    "id": "00000000000000000000000000",
+    "slug": "article-individuel",
+    "title": "Article Individuel",
+    "excerpt": "Résumé.",
+    "content": "Contenu.",
+    "category": "design",
+    "tags": [],
+    "publishedAt": "2026-06-25",
+    "readingTime": 3,
+    "featured": false,
+    "codeFile": null,
+    "codeFolder": null,
+    "codeProject": null
+}

@@ -1,0 +1,18 @@
+[
+    {
+        "id": "00000000000000000000000000",
+        "slug": "mon-premier-projet",
+        "title": "Mon Premier Projet",
+        "description": "Petite description.",
+        "longDescription": "Description détaillée sur plusieurs paragraphes.",
+        "techStack": [
+            "Laravel",
+            "Vue",
+            "Tailwind"
+        ],
+        "liveUrl": "https://example.com",
+        "repoUrl": "https://github.com/example/repo",
+        "featured": true,
+        "year": "2026"
+    }
+]
