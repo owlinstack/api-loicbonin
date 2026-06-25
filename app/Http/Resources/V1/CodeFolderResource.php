@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * Ressource de présentation pour un dossier de code source.
+ * Justification : Construit l'arborescence des dossiers et fichiers de manière récursive.
+ * Note de performance : Grâce à l'eager loading des relations (children, files) en amont dans le Service,
+ * cette récursion est entièrement résolue en mémoire sans provoquer de requêtes SQL N+1.
+ *
  * @property CodeFolder $resource
  */
 final class CodeFolderResource extends JsonResource

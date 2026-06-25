@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * Ressource de présentation pour les données de profil.
+ * Justification : Met en forme les données du DTO ProfileData pour la page de profil front-end,
+ * en convertissant les chemins de fichiers d'avatar et de CV en URLs absolues de stockage ou fallbacks statiques.
+ *
  * @property ProfileData $resource
  */
 final class ProfileResource extends JsonResource

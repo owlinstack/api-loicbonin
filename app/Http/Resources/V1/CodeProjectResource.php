@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * Ressource de présentation pour un projet de code source complet.
+ * Justification : Représente le point d'entrée de l'arborescence de fichiers du projet,
+ * et renvoie sa structure hiérarchique complète (dossiers racines et sous-dossiers).
+ *
  * @property CodeProject $resource
  */
 final class CodeProjectResource extends JsonResource

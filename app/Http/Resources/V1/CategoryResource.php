@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * Ressource de présentation pour une catégorie.
+ * Justification : Formate les catégories d'articles,
+ * et utilise une détection optimisée du count (soit déjà calculé avec withCount, soit via requête fallback).
+ *
  * @property Category $resource
  */
 final class CategoryResource extends JsonResource

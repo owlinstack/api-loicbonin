@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * Ressource de présentation pour un projet (réalisation).
+ * Justification : Met en forme les caractéristiques d'un projet pour le front-end,
+ * en convertissant les clés de snake_case vers camelCase pour le contrat d'API Next.js.
+ *
  * @property Project $resource
  */
 final class ProjectResource extends JsonResource

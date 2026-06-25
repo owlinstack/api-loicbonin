@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+/**
+ * Collection de ressources pour les articles.
+ * Justification : Encapsule la structure de pagination standardisée (format PaginatedArticles sous Next.js)
+ * pour unifier le contrat d'API et le wrapping JSON.
+ */
 final class ArticleCollection extends ResourceCollection
 {
     public static $wrap = null;

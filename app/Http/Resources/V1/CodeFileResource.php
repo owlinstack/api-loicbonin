@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * Ressource de présentation pour un fichier de code source.
+ * Justification : Expose les détails techniques d'un fichier source (chemin, langage, contenu),
+ * ainsi que ses relations inverses avec l'article et le projet associés.
+ *
  * @property CodeFile $resource
  */
 final class CodeFileResource extends JsonResource

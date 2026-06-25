@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * Ressource de présentation pour un article individuel.
+ * Justification : Transforme le modèle Article en un format JSON normalisé pour le frontend Next.js,
+ * gère le formatage des dates, extrait les noms des tags et lie récursivement les fichiers/dossiers/projets de code associés.
+ *
  * @mixin Article
  */
 final class ArticleResource extends JsonResource
