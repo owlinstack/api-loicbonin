@@ -10,10 +10,16 @@ use App\Models\CodeProject;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 
+/**
+ * Service gérant la génération et la mise en forme de l'arborescence des fichiers de code.
+ * Justification : Charge l'intégralité de l'arborescence (dossiers, sous-dossiers, fichiers) en mémoire
+ * en exactement 2 requêtes SQL globales (au lieu d'une cascade récursive sur la base),
+ * puis construit récursivement l'arbre en mémoire via le partitionnement par collections.
+ */
 final class CodeTreeService
 {
     /**
-     * Build the full code tree (all root folders and files).
+     * Génère l'arborescence complète du code (tous les dossiers racines et fichiers).
      *
      * @return array<int, mixed>
      */
@@ -45,7 +51,7 @@ final class CodeTreeService
     }
 
     /**
-     * Build the code tree scoped to a given project.
+     * Génère l'arborescence du code limitée à un projet donné.
      *
      * @return array<int, mixed>
      */
@@ -59,7 +65,7 @@ final class CodeTreeService
             ->orderBy('sort_order')
             ->get();
 
-        // Filter folders that belong to the project in memory
+        // Filtre en mémoire les dossiers qui appartiennent au projet
         $projectFolders = $allFolders->filter(function (CodeFolder $folder) use ($project, $allFolders) {
             $current = $folder;
             while ($current) {
@@ -76,7 +82,7 @@ final class CodeTreeService
 
         $folderIds = $projectFolders->pluck('id')->all();
 
-        // Filter files that belong to any of these folders
+        // Filtre les fichiers qui appartiennent à l'un de ces dossiers
         $projectFiles = $allFiles->filter(fn (CodeFile $file) => \in_array($file->folder_id, $folderIds, true));
 
         $rootFolders = $projectFolders->filter(fn (CodeFolder $folder) => ! $folder->parent_id);
@@ -92,7 +98,7 @@ final class CodeTreeService
     }
 
     /**
-     * Recursively build a folder tree node array from in-memory collections.
+     * Construit récursivement un tableau de nœuds de dossiers à partir de collections en mémoire.
      *
      * @param  Collection<int, CodeFolder>  $folders
      * @param  SupportCollection<string, Collection<int, CodeFolder>>  $foldersGrouped
@@ -127,7 +133,7 @@ final class CodeTreeService
     }
 
     /**
-     * Map a collection of CodeFile models to the API array shape.
+     * Transforme une collection de modèles CodeFile au format attendu par l'API.
      *
      * @param  Collection<int, CodeFile>  $files
      * @return array<int, mixed>

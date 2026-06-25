@@ -7,6 +7,11 @@ namespace App\Services;
 use App\DTOs\ProfileData;
 use App\Models\Profile;
 
+/**
+ * Service gérant le chargement du profil professionnel de développement.
+ * Justification : Implémente un patron de conception Fallback (si la base de données est vide,
+ * fournit des informations par défaut codées en dur pour que le portfolio reste entièrement fonctionnel au premier démarrage).
+ */
 final class ProfileService
 {
     /**

@@ -8,6 +8,11 @@ use App\Enums\ArticleStatus;
 use App\Models\Article;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
+/**
+ * Service métier gérant les opérations sur les articles de blog.
+ * Justification : Centralise la logique d'accès aux articles publiés (avec filtres, pagination, tri),
+ * et regroupe l'eager loading des relations complexes pour éliminer tout risque de requêtes N+1.
+ */
 final class ArticleService
 {
     /**
