@@ -468,4 +468,83 @@ final class GeneralApiTest extends TestCase
         // Le fallback articles()->count() doit renvoyer le total (publiés + brouillons ici)
         $this->assertEquals(2, $data['count']);
     }
+
+    // --- Tests de sécurité : fuite d'information (Information Disclosure) ---
+
+    public function test_cannot_access_file_from_unpublished_code_project(): void
+    {
+        $unpublishedProject = CodeProject::create([
+            'name' => 'Secret Project',
+            'slug' => 'secret-project',
+            'description' => 'Projet non publié',
+            'is_published' => false,
+        ]);
+
+        $folder = CodeFolder::create([
+            'name' => 'secret-src',
+            'path' => 'secret-src',
+            'code_project_id' => $unpublishedProject->id,
+            'sort_order' => 1,
+        ]);
+
+        CodeFile::create([
+            'name' => 'secret.php',
+            'path' => 'secret-src/secret.php',
+            'language' => 'php',
+            'content' => '<?php // Code confidentiel',
+            'folder_id' => $folder->id,
+            'sort_order' => 1,
+        ]);
+
+        // Même en connaissant le chemin exact, le fichier ne doit pas être accessible
+        $response = $this->getJson('/api/v1/code/files/secret-src/secret.php');
+        $response->assertStatus(404);
+    }
+
+    public function test_global_tree_does_not_expose_unpublished_project_content(): void
+    {
+        $publishedProject = CodeProject::create([
+            'name' => 'Published Project',
+            'slug' => 'published-project',
+            'description' => 'Projet publié',
+            'is_published' => true,
+        ]);
+
+        $unpublishedProject = CodeProject::create([
+            'name' => 'Secret Project',
+            'slug' => 'secret-project',
+            'description' => 'Projet non publié',
+            'is_published' => false,
+        ]);
+
+        CodeFolder::create([
+            'name' => 'public-src',
+            'path' => 'public-src',
+            'code_project_id' => $publishedProject->id,
+            'sort_order' => 1,
+        ]);
+
+        $secretFolder = CodeFolder::create([
+            'name' => 'secret-src',
+            'path' => 'secret-src',
+            'code_project_id' => $unpublishedProject->id,
+            'sort_order' => 2,
+        ]);
+
+        // Sous-dossier du projet non publié : doit également être masqué
+        CodeFolder::create([
+            'name' => 'secret-nested',
+            'path' => 'secret-src/nested',
+            'parent_id' => $secretFolder->id,
+            'code_project_id' => null,
+            'sort_order' => 1,
+        ]);
+
+        $response = $this->getJson('/api/v1/code/tree');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['name' => 'public-src'])
+            ->assertJsonMissing(['name' => 'secret-src'])
+            ->assertJsonMissing(['name' => 'secret-nested']);
+    }
 }
