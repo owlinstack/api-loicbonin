@@ -1,0 +1,22 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "app"
+        ],
+        "excludes": [
+            "Console",
+            "Exceptions",
+            "Filament",
+            "Http",
+            "Providers"
+        ]
+    },
+    "mutators": {
+        "@default": true
+    },
+    "logs": {
+        "text": "storage/logs/infection.log"
+    },
+    "tmpDir": "storage/logs"
+}
