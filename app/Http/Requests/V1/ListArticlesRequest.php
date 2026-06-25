@@ -30,4 +30,23 @@ final class ListArticlesRequest extends FormRequest
             'pageSize' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }
+
+    /**
+     * Get the validated data from the request.
+     *
+     * @param  array<int, string>|string|null  $key
+     * @param  mixed  $default
+     * @return array{category?: string|null, tag?: string|null, page?: int|null, pageSize?: int|null}
+     */
+    public function validated($key = null, $default = null): array
+    {
+        $validated = parent::validated($key, $default);
+
+        if (! \is_array($validated)) {
+            return [];
+        }
+
+        /** @var array{category?: string|null, tag?: string|null, page?: int|null, pageSize?: int|null} $validated */
+        return $validated;
+    }
 }

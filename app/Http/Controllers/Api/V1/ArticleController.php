@@ -27,18 +27,16 @@ final class ArticleController extends Controller
 
     /**
      * Liste les articles publiés avec pagination et filtres optionnels.
+     * Choix : Utilise ListArticlesRequest pour la validation et délègue la logique de filtre au Service.
      */
     public function index(ListArticlesRequest $request): ArticleCollection
     {
         $validated = $request->validated();
 
-        // Extraction et typage explicite (type casting) pour satisfaire PHPStan
-        // et sécuriser les types de paramètres reçus sous forme de chaînes de l'URL
-
-        $category = isset($validated['category']) ? (string) $validated['category'] : null;
-        $tag = isset($validated['tag']) ? (string) $validated['tag'] : null;
-        $page = isset($validated['page']) ? (int) $validated['page'] : 1;
-        $pageSize = isset($validated['pageSize']) ? (int) $validated['pageSize'] : 10;
+        $category = $validated['category'] ?? null;
+        $tag = $validated['tag'] ?? null;
+        $page = $validated['page'] ?? 1;
+        $pageSize = $validated['pageSize'] ?? 10;
 
         $paginated = $this->articleService->listPublished(
             category: $category,
@@ -52,6 +50,7 @@ final class ArticleController extends Controller
 
     /**
      * Affiche un article individuel recherché par son slug.
+     * Choix : Utilise ArticleService et retourne une ressource formatée ou une erreur 404 standardisée.
      */
     public function show(string $slug): ArticleResource|JsonResponse
     {
