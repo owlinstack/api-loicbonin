@@ -43,11 +43,15 @@ set -e
 
 # S'assurer que les dossiers de storage existent (au cas où le volume monté est vide)
 mkdir -p /app/storage/app/public
+mkdir -p /app/storage/app/livewire-tmp
 mkdir -p /app/storage/framework/cache/data
 mkdir -p /app/storage/framework/sessions
 mkdir -p /app/storage/framework/views
 mkdir -p /app/storage/logs
 chown -R www-data:www-data /app/storage
+
+# Créer le lien symbolique storage pour rendre les uploads accessibles publiquement
+php artisan storage:link --force
 
 # Création du fichier SQLite s'il n'existe pas
 touch /app/database/database.sqlite
