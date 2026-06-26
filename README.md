@@ -1,17 +1,17 @@
 # API Loïc Bonin
 
-Backend API REST stateless du portfolio [loicbonin.com](https://loicbonin.com), construit avec **Laravel 13** et **PHP 8.3+**.
+Backend API REST stateless du portfolio [loicbonin.com](https://loicbonin.com), construit avec **Laravel 13** et **PHP 8.4+**.
 
 ## Stack principale
 
-| Composant    | Version             |
-| :----------- | :------------------ |
-| PHP          | 8.4+                |
-| Laravel      | 13.x                |
-| Filament     | 5.x                 |
+| Composant    | Version               |
+| :----------- | :-------------------- |
+| PHP          | 8.4+                  |
+| Laravel      | 13.x                  |
+| Filament     | 5.x                   |
 | PHPStan      | Niveau max (Larastan) |
-| Laravel Pint | PSR-12 strict       |
-| SQLite       | Dev & tests         |
+| Laravel Pint | PSR-12 strict         |
+| SQLite       | Dev & tests           |
 
 ## Démarrage rapide
 
