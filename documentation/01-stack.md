@@ -12,7 +12,7 @@ Ce document liste la pile technologique (stack) du backend, les versions majeure
 | **Laravel**      | `13.x`  | Framework applicatif principal (API REST). | Rapidité de mise en place de routes, contrôleurs versionnés, transformations JSON (API Resources) et support du rate limiting natif.        |
 | **Filament**     | `v5.x`  | Panneau d'administration (AdminCreator).   | Génération d'interfaces d'administration asynchrones basées sur Livewire v4, utilisation de structures `Schema` découplées et MFA intégré.  |
 | **SQLite**       | `3.x`   | Base de données de développement & tests.  | Légèreté totale en local (fichier `database.sqlite` ou base `:memory:` pour les tests), évitant la dépendance d'un service de base externe. |
-| **PHPStan**      | `^2.x`  | Analyseur statique (avec Larastan).        | Garantie de la sécurité des types au niveau 8, réduction des erreurs d'exécution en vérifiant les chemins d'exécution et méthodes.          |
+| **PHPStan**      | `^2.x`  | Analyseur statique (avec Larastan).        | Garantie de la sécurité des types au niveau max, réduction des erreurs d'exécution en vérifiant les chemins d'exécution et méthodes.          |
 | **Laravel Pint** | `^1.x`  | Formateur de code automatique.             | Uniformisation du style de programmation (PSR-12 amélioré avec typage strict forcé, méthodes finales et retours void).                      |
 
 ### Packages de Qualité et Tests (dev)

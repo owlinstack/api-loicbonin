@@ -9,7 +9,7 @@ Backend API REST stateless du portfolio [loicbonin.com](https://loicbonin.com), 
 | PHP          | 8.4+                |
 | Laravel      | 13.x                |
 | Filament     | 5.x                 |
-| PHPStan      | Niveau 8 (Larastan) |
+| PHPStan      | Niveau max (Larastan) |
 | Laravel Pint | PSR-12 strict       |
 | SQLite       | Dev & tests         |
 
@@ -30,7 +30,7 @@ L'API est accessible sur `http://localhost:8000/api/v1/`.
 
 ```bash
 php artisan test              # Tests
-./vendor/bin/phpstan analyse  # Analyse statique (niveau 8)
+./vendor/bin/phpstan analyse  # Analyse statique (niveau max)
 ./vendor/bin/pint --test      # Formatage PSR-12
 ```
 

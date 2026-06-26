@@ -46,10 +46,10 @@ Pint formate automatiquement le code en suivant les standards PSR-12 adaptés po
 
 ### 2. PHPStan (`phpstan.neon`)
 
-Analyseur de code statique configuré au **Niveau 8** (le niveau le plus strict recommandable en Laravel).
+Analyseur de code statique configuré au **Niveau max** (le niveau d'exigence absolue).
 
 - Tous les chemins de code doivent être exempts d'erreurs de typage.
-- Le dossier `app/Filament/` est exclu de l'analyse car Filament génère des liaisons magiques dynamiques incompatibles avec le niveau 8 de PHPStan.
+- Le dossier `app/Filament/` est exclu de l'analyse car Filament génère des liaisons magiques dynamiques incompatibles avec le niveau max de PHPStan.
 - Le plugin `phpat/phpat` est activé dans `phpstan.neon` pour faire tourner les tests d'architecture en même temps que l'analyse statique.
 
 ```bash
