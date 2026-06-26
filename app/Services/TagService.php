@@ -20,6 +20,9 @@ final class TagService
      */
     public function listAllNames(): Collection
     {
-        return Tag::query()->pluck('name');
+        return Tag::query()
+            ->pluck('name')
+            ->values()
+            ->map(fn (mixed $name): string => \is_string($name) ? $name : '');
     }
 }

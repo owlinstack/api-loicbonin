@@ -47,11 +47,10 @@ final class ListArticlesRequest extends FormRequest
         }
 
         if (isset($validated['page'])) {
-            $validated['page'] = (int) $validated['page'];
+            $validated['page'] = \is_scalar($validated['page']) ? (int) $validated['page'] : null;
         }
-
         if (isset($validated['pageSize'])) {
-            $validated['pageSize'] = (int) $validated['pageSize'];
+            $validated['pageSize'] = \is_scalar($validated['pageSize']) ? (int) $validated['pageSize'] : null;
         }
 
         /** @var array{category?: string|null, tag?: string|null, page?: int|null, pageSize?: int|null} $validated */
