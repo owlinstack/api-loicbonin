@@ -12,6 +12,9 @@ RUN apk add --no-cache \
     bcmath \
     pdo_sqlite
 
+# Installer Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 # Configuration FrankenPHP
 ENV FRANKENPHP_CONFIG="import worker.Caddyfile"
 ENV PORT=8000
