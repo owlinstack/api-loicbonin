@@ -101,6 +101,10 @@ return [
 
     'key' => env('APP_KEY'),
 
+    'admin_email' => env('ADMIN_EMAIL'),
+
+    'frontend_url' => env('FRONTEND_URL', 'https://loicbonin.com'),
+
     'previous_keys' => [
         ...array_filter(
             explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
