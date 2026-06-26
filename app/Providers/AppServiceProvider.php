@@ -30,5 +30,9 @@ final class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request): Limit {
             return Limit::perMinute(60)->by($request->ip() ?? (string) $request->user()?->id);
         });
+
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
