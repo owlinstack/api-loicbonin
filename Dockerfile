@@ -10,7 +10,9 @@ RUN apk add --no-cache \
     opcache \
     zip \
     bcmath \
-    pdo_sqlite
+    pdo_sqlite \
+    intl \
+    posix
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
