@@ -6,6 +6,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,10 +30,19 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
-final class User extends Authenticatable
+final class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    /**
+     * Autorise l'accès au panel d'administration de Filament.
+     * Requis en production (Filament bloque par défaut l'accès en prod).
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->email === env('ADMIN_EMAIL');
+    }
 
     /**
      * Get the attributes that should be cast.
