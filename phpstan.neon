@@ -3,7 +3,7 @@ includes:
     - vendor/phpat/phpat/extension.neon
 
 parameters:
-    level: 8
+    level: max
     paths:
         - app/
         - tests/Architecture/
