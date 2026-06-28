@@ -134,4 +134,32 @@ final class ProfileServiceTest extends TestCase
         $this->assertNotNull($data->education);
         $this->assertCount(1, $data->education);
     }
+
+    public function test_get_profile_data_defaults_visibility_toggles_to_true_when_null(): void
+    {
+        Profile::query()->delete();
+
+        Profile::create([
+            'name' => 'Loïc Null Toggles',
+            'bio' => 'Bio',
+            'skills' => [],
+            'timeline' => [
+                ['date' => '2026', 'title' => 'Job', 'description' => 'Desc'],
+            ],
+            'education' => [
+                ['date' => '2020', 'title' => 'School', 'description' => 'Desc'],
+            ],
+            'show_timeline' => null,
+            'show_education' => null,
+            'cv_url' => null,
+            'avatar_url' => null,
+        ]);
+
+        $data = $this->profileService->getProfileData();
+
+        $this->assertTrue($data->showTimeline);
+        $this->assertNotNull($data->timeline);
+        $this->assertTrue($data->showEducation);
+        $this->assertNotNull($data->education);
+    }
 }

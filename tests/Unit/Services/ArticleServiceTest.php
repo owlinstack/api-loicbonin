@@ -11,6 +11,7 @@ use App\Models\Tag;
 use App\Services\ArticleService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 final class ArticleServiceTest extends TestCase
@@ -358,5 +359,83 @@ final class ArticleServiceTest extends TestCase
         $found = $this->articleService->findBySlug('article-futur');
 
         $this->assertNull($found);
+    }
+
+    public function test_list_published_uses_default_page_size(): void
+    {
+        Article::query()->delete();
+        for ($i = 1; $i <= 15; $i++) {
+            Article::create([
+                'title' => "Article {$i}",
+                'slug' => "article-{$i}",
+                'excerpt' => 'Intro',
+                'content' => 'Corps',
+                'category_id' => $this->catBackend->id,
+                'status' => ArticleStatus::Published,
+                'reading_time' => 3,
+                'published_at' => now()->subDays($i),
+            ]);
+        }
+
+        $results = $this->articleService->listPublished();
+        $this->assertCount(10, $results->items());
+        $this->assertEquals(15, $results->total());
+    }
+
+    public function test_list_published_eager_loads_relations_without_n_plus_one(): void
+    {
+        Article::query()->delete();
+
+        // 1. Charger avec 2 articles
+        for ($i = 1; $i <= 2; $i++) {
+            $art = Article::create([
+                'title' => "Article {$i}",
+                'slug' => "article-{$i}",
+                'excerpt' => 'Intro',
+                'content' => 'Corps',
+                'category_id' => $this->catBackend->id,
+                'status' => ArticleStatus::Published,
+                'reading_time' => 3,
+                'published_at' => now()->subDays($i),
+            ]);
+            $art->tags()->sync([Tag::create(['name' => "Tag {$i}"])->id]);
+        }
+
+        DB::enableQueryLog();
+        $results2 = $this->articleService->listPublished();
+        foreach ($results2->items() as $article) {
+            $article->category?->label;
+            $article->tags->pluck('name');
+        }
+        $queriesForTwo = count(DB::getQueryLog());
+        DB::disableQueryLog();
+
+        // 2. Charger avec 7 articles (5 supplémentaires)
+        for ($i = 3; $i <= 7; $i++) {
+            $art = Article::create([
+                'title' => "Article {$i}",
+                'slug' => "article-{$i}",
+                'excerpt' => 'Intro',
+                'content' => 'Corps',
+                'category_id' => $this->catBackend->id,
+                'status' => ArticleStatus::Published,
+                'reading_time' => 3,
+                'published_at' => now()->subDays($i),
+            ]);
+            $art->tags()->sync([Tag::create(['name' => "Tag {$i}"])->id]);
+        }
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+        $results7 = $this->articleService->listPublished();
+        foreach ($results7->items() as $article) {
+            $article->category?->label;
+            $article->tags->pluck('name');
+        }
+        $queriesForSeven = count(DB::getQueryLog());
+        DB::disableQueryLog();
+
+        // Le nombre de requêtes doit être identique s'il y a eager loading (évite les requêtes N+1)
+        $this->assertEquals($queriesForTwo, $queriesForSeven);
     }
 }

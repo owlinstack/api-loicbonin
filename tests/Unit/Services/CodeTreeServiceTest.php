@@ -12,6 +12,7 @@ use App\Models\CodeFolder;
 use App\Models\CodeProject;
 use App\Services\CodeTreeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 final class CodeTreeServiceTest extends TestCase
@@ -81,14 +82,28 @@ final class CodeTreeServiceTest extends TestCase
             'sort_order' => 1,
         ]);
 
+        // 6. Fichier à la racine (sans dossier)
+        CodeFile::create([
+            'name' => 'root-file.txt',
+            'path' => 'root-file.txt',
+            'language' => 'text',
+            'content' => 'Root file content',
+            'folder_id' => null,
+            'sort_order' => 3,
+        ]);
+
         $tree = $this->codeTreeService->getFullTree();
 
         // On attend:
-        // Index 0: Dossier 'app'
-        $this->assertCount(1, $tree);
+        // Dossier 'app' et Fichier 'root-file.txt'
+        $this->assertCount(2, $tree);
 
-        $appNode = $tree[0];
-        $this->assertEquals('app', $appNode['name']);
+        $names = array_column($tree, 'name');
+        $this->assertContains('app', $names);
+        $this->assertContains('root-file.txt', $names);
+
+        $appNode = collect($tree)->firstWhere('name', 'app');
+        $this->assertNotNull($appNode);
         $this->assertEquals('app', $appNode['path']);
 
         // Dans 'app', on doit avoir par sort_order:
@@ -283,5 +298,69 @@ final class CodeTreeServiceTest extends TestCase
         $this->assertEquals('lib', $tree[0]['children'][0]['name']);
         $this->assertEquals('utils', $tree[0]['children'][0]['children'][0]['name']);
         $this->assertEquals('helpers.ts', $tree[0]['children'][0]['children'][0]['children'][0]['name']);
+    }
+
+    public function test_get_project_tree_eager_loads_relations_without_n_plus_one(): void
+    {
+        $project = CodeProject::create([
+            'name' => 'Project N1',
+            'slug' => 'project-n1',
+            'description' => 'Test queries',
+        ]);
+
+        $folder = CodeFolder::create([
+            'name' => 'root',
+            'path' => 'root',
+            'code_project_id' => $project->id,
+            'sort_order' => 1,
+        ]);
+
+        $sub1 = CodeFolder::create([
+            'name' => 'sub1',
+            'path' => 'root/sub1',
+            'parent_id' => $folder->id,
+            'sort_order' => 1,
+        ]);
+
+        CodeFile::create([
+            'name' => 'f1.ts',
+            'path' => 'root/sub1/f1.ts',
+            'language' => 'typescript',
+            'content' => 'export const a = 1;',
+            'folder_id' => $sub1->id,
+            'sort_order' => 1,
+        ]);
+
+        DB::enableQueryLog();
+        $this->codeTreeService->getProjectTree($project);
+        $queriesForOne = count(DB::getQueryLog());
+        DB::disableQueryLog();
+
+        // Ajoute 5 dossiers et 5 fichiers supplémentaires
+        for ($i = 2; $i <= 6; $i++) {
+            $sub = CodeFolder::create([
+                'name' => "sub-{$i}",
+                'path' => "root/sub-{$i}",
+                'parent_id' => $folder->id,
+                'sort_order' => $i,
+            ]);
+            CodeFile::create([
+                'name' => "f-{$i}.ts",
+                'path' => "root/sub-{$i}/f-{$i}.ts",
+                'language' => 'typescript',
+                'content' => 'export const a = 1;',
+                'folder_id' => $sub->id,
+                'sort_order' => 1,
+            ]);
+        }
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+        $this->codeTreeService->getProjectTree($project);
+        $queriesForMany = count(DB::getQueryLog());
+        DB::disableQueryLog();
+
+        // Le nombre total de requêtes SQL exécutées pour charger l'arbre doit être identique (O(1))
+        $this->assertEquals($queriesForOne, $queriesForMany);
     }
 }
