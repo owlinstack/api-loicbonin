@@ -77,8 +77,9 @@ final class ArticleResource extends Resource
                 ->icon('heroicon-o-tag')
                 ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('category_id')
-                        ->relationship('category', 'label')
+                    Forms\Components\Select::make('categories')
+                        ->relationship('categories', 'label')
+                        ->multiple()
                         ->required()
                         ->searchable()
                         ->preload()
@@ -183,7 +184,7 @@ final class ArticleResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('category.label')
+                Tables\Columns\TextColumn::make('categories.label')
                     ->badge(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
@@ -202,8 +203,9 @@ final class ArticleResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options(ArticleStatus::class),
-                Tables\Filters\SelectFilter::make('category')
-                    ->relationship('category', 'label'),
+                Tables\Filters\SelectFilter::make('categories')
+                    ->relationship('categories', 'label')
+                    ->multiple(),
             ])
             ->actions([
                 EditAction::make(),
