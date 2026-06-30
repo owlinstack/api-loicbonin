@@ -23,7 +23,7 @@ L'administration est configurée via [AdminCreatorPanelProvider.php](../app/Prov
 
 - **Mise en page mono-colonne pleine largeur** : Le formulaire est structuré de manière entièrement séquentielle sur une seule colonne. Toutes les sections (`Contenu`, `Métadonnées`, `Code Source Associé`) et tous les champs internes s'affichent les uns en dessous des autres en occupant toute la largeur disponible pour maximiser l'espace d'édition.
   - **Section "Contenu"** (avec icône `heroicon-o-document-text`) : Regroupe le titre, le slug, le résumé et l'éditeur markdown principal (`content`) configuré à une hauteur confortable de `400px`. Cet éditeur prend en charge le téléversement d'images (bouton d'attachement ou glisser-déposer), configuré pour enregistrer les fichiers sur le disque `public` (répertoire `attachments/`).
-  - **Section "Métadonnées"** (avec icône `heroicon-o-tag`) : Regroupe la catégorie, les tags multiples, le statut, le temps de lecture estimé, le commutateur de mise en avant et la date de publication.
+  - **Section "Métadonnées"** (avec icône `heroicon-o-tag`) : Regroupe la ou les catégories (multisélection), les tags multiples, le statut, le temps de lecture estimé, le commutateur de mise en avant et la date de publication.
   - **Section "Code Source Associé"** (avec icône `heroicon-o-code-bracket`) : Regroupe le sélecteur réactif du type de liaison et les sélecteurs dynamiques de code (fichier, dossier, projet).
 - **Création en Ligne** : Permet de créer des catégories et des tags à la volée directement depuis les fenêtres modales intégrées aux sélecteurs sans interrompre la saisie.
 
