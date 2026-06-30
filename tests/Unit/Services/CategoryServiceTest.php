@@ -39,26 +39,26 @@ final class CategoryServiceTest extends TestCase
         ]);
 
         // Article publié
-        Article::create([
+        $artPub = Article::create([
             'title' => 'Article publié',
             'slug' => 'article-publie',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
         ]);
+        $artPub->categories()->attach($category->id);
 
         // Article brouillon (ne doit pas être compté)
-        Article::create([
+        $artDraft = Article::create([
             'title' => 'Article brouillon',
             'slug' => 'article-brouillon',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Draft,
             'reading_time' => 3,
         ]);
+        $artDraft->categories()->attach($category->id);
 
         $results = $this->categoryService->listWithPublishedArticlesCount();
 

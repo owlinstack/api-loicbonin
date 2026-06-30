@@ -49,7 +49,6 @@ final class ArticleSnapshotTest extends TestCase
         /** @var Article $article */
         $article = Article::create([
             'id' => '01h7x8y9z01h7x8y9z01h7x8y2',
-            'category_id' => $category->id,
             'title' => 'Mon Super Article de Test',
             'slug' => 'mon-super-article-de-test',
             'excerpt' => 'Résumé de l\'article.',
@@ -62,6 +61,7 @@ final class ArticleSnapshotTest extends TestCase
             'updated_at' => $fixedDate,
         ]);
 
+        $article->categories()->attach($category->id);
         $article->tags()->attach($tag->id);
 
         $response = $this->getJson('/api/v1/articles');
@@ -91,7 +91,6 @@ final class ArticleSnapshotTest extends TestCase
         /** @var Article $article */
         $article = Article::create([
             'id' => '01h7x8y9z01h7x8y9z01h7x8y3',
-            'category_id' => $category->id,
             'title' => 'Article Individuel',
             'slug' => 'article-individuel',
             'excerpt' => 'Résumé.',
@@ -103,6 +102,8 @@ final class ArticleSnapshotTest extends TestCase
             'created_at' => $fixedDate,
             'updated_at' => $fixedDate,
         ]);
+
+        $article->categories()->attach($category->id);
 
         $response = $this->getJson('/api/v1/articles/article-individuel');
 

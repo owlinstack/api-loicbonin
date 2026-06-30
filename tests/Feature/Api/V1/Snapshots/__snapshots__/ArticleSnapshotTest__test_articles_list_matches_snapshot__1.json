@@ -7,6 +7,9 @@
             "excerpt": "Résumé de l'article.",
             "content": "Contenu détaillé de l'article.",
             "category": "tech",
+            "categories": [
+                "tech"
+            ],
             "tags": [
                 "Laravel"
             ],

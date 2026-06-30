@@ -37,24 +37,24 @@ final class ArticleApiTest extends TestCase
             'slug' => 'article-publie',
             'excerpt' => 'Introduction',
             'content' => 'Contenu complet',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 5,
             'featured' => false,
             'published_at' => now()->subDay(),
         ]);
+        $published->categories()->sync([$this->category->id]);
 
-        Article::create([
+        $draft = Article::create([
             'title' => 'Article brouillon',
             'slug' => 'article-brouillon',
             'excerpt' => 'Introduction draft',
             'content' => 'Contenu draft',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Draft,
             'reading_time' => 3,
             'featured' => false,
             'published_at' => null,
         ]);
+        $draft->categories()->sync([$this->category->id]);
 
         $response = $this->getJson('/api/v1/articles');
 
@@ -88,27 +88,27 @@ final class ArticleApiTest extends TestCase
 
     public function test_list_does_not_return_future_scheduled_articles(): void
     {
-        Article::create([
+        $future = Article::create([
             'title' => 'Article Futur',
             'slug' => 'article-futur',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->addDay(),
         ]);
+        $future->categories()->sync([$this->category->id]);
 
-        Article::create([
+        $visible = Article::create([
             'title' => 'Article Visible',
             'slug' => 'article-visible',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subHour(),
         ]);
+        $visible->categories()->sync([$this->category->id]);
 
         $response = $this->getJson('/api/v1/articles');
 
@@ -124,29 +124,29 @@ final class ArticleApiTest extends TestCase
             'label' => 'Frontend',
         ]);
 
-        Article::create([
+        $backendArticle = Article::create([
             'title' => 'Article Backend',
             'slug' => 'article-backend',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 5,
             'featured' => false,
             'published_at' => now()->subDay(),
         ]);
+        $backendArticle->categories()->sync([$this->category->id]);
 
-        Article::create([
+        $frontendArticle = Article::create([
             'title' => 'Article Frontend',
             'slug' => 'article-frontend',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $otherCategory->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 5,
             'featured' => false,
             'published_at' => now()->subDay(),
         ]);
+        $frontendArticle->categories()->sync([$otherCategory->id]);
 
         $response = $this->getJson('/api/v1/articles?category=backend');
 
@@ -165,12 +165,12 @@ final class ArticleApiTest extends TestCase
             'slug' => 'article-php',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 5,
             'featured' => false,
             'published_at' => now()->subDay(),
         ]);
+        $articlePhp->categories()->sync([$this->category->id]);
         $articlePhp->tags()->sync([$tagPhp->id]);
 
         $articleJs = Article::create([
@@ -178,12 +178,12 @@ final class ArticleApiTest extends TestCase
             'slug' => 'article-js',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 5,
             'featured' => false,
             'published_at' => now()->subDay(),
         ]);
+        $articleJs->categories()->sync([$this->category->id]);
         $articleJs->tags()->sync([$tagJs->id]);
 
         $response = $this->getJson('/api/v1/articles?tag=PHP');
@@ -202,13 +202,12 @@ final class ArticleApiTest extends TestCase
             'slug' => 'mon-article',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 4,
             'featured' => true,
             'published_at' => now()->subHour(),
         ]);
-
+        $article->categories()->sync([$this->category->id]);
         $article->tags()->sync([$tag->id]);
 
         $response = $this->getJson('/api/v1/articles/mon-article');
@@ -222,16 +221,16 @@ final class ArticleApiTest extends TestCase
 
     public function test_cannot_get_draft_article(): void
     {
-        Article::create([
+        $draft = Article::create([
             'title' => 'Brouillon',
             'slug' => 'brouillon',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Draft,
             'reading_time' => 2,
             'published_at' => null,
         ]);
+        $draft->categories()->sync([$this->category->id]);
 
         $response = $this->getJson('/api/v1/articles/brouillon');
 
@@ -240,18 +239,17 @@ final class ArticleApiTest extends TestCase
 
     public function test_cannot_get_future_scheduled_article(): void
     {
-        Article::create([
+        $future = Article::create([
             'title' => 'Article Futur',
             'slug' => 'article-futur',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->addDay(),
         ]);
+        $future->categories()->sync([$this->category->id]);
 
-        // Un article planifié dans le futur ne doit pas être accessible via l'endpoint
         $response = $this->getJson('/api/v1/articles/article-futur');
 
         $response->assertStatus(404)
@@ -278,12 +276,12 @@ final class ArticleApiTest extends TestCase
             'slug' => 'article-with-file',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 5,
             'published_at' => now()->subDay(),
             'code_file_id' => $file->id,
         ]);
+        $article->categories()->sync([$this->category->id]);
 
         $response = $this->getJson('/api/v1/articles/article-with-file');
 
@@ -320,12 +318,12 @@ final class ArticleApiTest extends TestCase
             'slug' => 'article-with-folder',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 5,
             'published_at' => now()->subDay(),
             'code_folder_id' => $parentFolder->id,
         ]);
+        $article->categories()->sync([$this->category->id]);
 
         $response = $this->getJson('/api/v1/articles/article-with-folder');
 
@@ -364,12 +362,12 @@ final class ArticleApiTest extends TestCase
             'slug' => 'article-with-project',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 5,
             'published_at' => now()->subDay(),
             'code_project_id' => $project->id,
         ]);
+        $article->categories()->sync([$this->category->id]);
 
         $response = $this->getJson('/api/v1/articles/article-with-project');
 

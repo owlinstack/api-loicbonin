@@ -5,6 +5,9 @@
     "excerpt": "Résumé.",
     "content": "Contenu.",
     "category": "design",
+    "categories": [
+        "design"
+    ],
     "tags": [],
     "publishedAt": "2026-06-25",
     "readingTime": 3,

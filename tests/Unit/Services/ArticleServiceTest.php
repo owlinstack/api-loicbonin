@@ -36,52 +36,52 @@ final class ArticleServiceTest extends TestCase
     public function test_list_published_returns_only_published_and_past_articles(): void
     {
         // 1. Article publié dans le passé
-        Article::create([
+        $art1 = Article::create([
             'title' => 'Article Passé',
             'slug' => 'article-passe',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $art1->categories()->sync([$this->catBackend->id]);
 
         // 2. Article publié avec date nulle (considéré immédiat)
-        Article::create([
+        $art2 = Article::create([
             'title' => 'Article Immédiat',
             'slug' => 'article-immediat',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => null,
         ]);
+        $art2->categories()->sync([$this->catBackend->id]);
 
         // 3. Article publié mais planifié dans le futur (ne doit pas apparaître)
-        Article::create([
+        $art3 = Article::create([
             'title' => 'Article Futur',
             'slug' => 'article-futur',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->addDay(),
         ]);
+        $art3->categories()->sync([$this->catBackend->id]);
 
         // 4. Article brouillon (ne doit pas apparaître)
-        Article::create([
+        $art4 = Article::create([
             'title' => 'Article Brouillon',
             'slug' => 'article-brouillon',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Draft,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $art4->categories()->sync([$this->catBackend->id]);
 
         /** @var LengthAwarePaginator<int, Article> $results */
         $results = $this->articleService->listPublished();
@@ -92,27 +92,27 @@ final class ArticleServiceTest extends TestCase
 
     public function test_list_published_excludes_archived_articles(): void
     {
-        Article::create([
+        $artArchived = Article::create([
             'title' => 'Article Archivé',
             'slug' => 'article-archive',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Archived,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artArchived->categories()->sync([$this->catBackend->id]);
 
-        Article::create([
+        $artPub = Article::create([
             'title' => 'Article Publié',
             'slug' => 'article-publie',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artPub->categories()->sync([$this->catBackend->id]);
 
         /** @var LengthAwarePaginator<int, Article> $results */
         $results = $this->articleService->listPublished();
@@ -127,16 +127,17 @@ final class ArticleServiceTest extends TestCase
         $tagJs = Tag::create(['name' => 'JS']);
 
         // Backend + PHP : doit apparaître
+        // Backend + PHP : doit apparaître
         $artBackendPhp = Article::create([
             'title' => 'Backend PHP',
             'slug' => 'backend-php',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artBackendPhp->categories()->sync([$this->catBackend->id]);
         $artBackendPhp->tags()->sync([$tagPhp->id]);
 
         // Backend + JS : ne doit pas apparaître (mauvais tag)
@@ -145,11 +146,11 @@ final class ArticleServiceTest extends TestCase
             'slug' => 'backend-js',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artBackendJs->categories()->sync([$this->catBackend->id]);
         $artBackendJs->tags()->sync([$tagJs->id]);
 
         // Frontend + PHP : ne doit pas apparaître (mauvaise catégorie)
@@ -158,11 +159,11 @@ final class ArticleServiceTest extends TestCase
             'slug' => 'frontend-php',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catFrontend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artFrontendPhp->categories()->sync([$this->catFrontend->id]);
         $artFrontendPhp->tags()->sync([$tagPhp->id]);
 
         /** @var LengthAwarePaginator<int, Article> $results */
@@ -174,27 +175,27 @@ final class ArticleServiceTest extends TestCase
 
     public function test_list_published_filters_by_category(): void
     {
-        Article::create([
+        $artBackend = Article::create([
             'title' => 'Article Backend',
             'slug' => 'article-backend',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artBackend->categories()->sync([$this->catBackend->id]);
 
-        Article::create([
+        $artFrontend = Article::create([
             'title' => 'Article Frontend',
             'slug' => 'article-frontend',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catFrontend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artFrontend->categories()->sync([$this->catFrontend->id]);
 
         /** @var LengthAwarePaginator<int, Article> $results */
         $results = $this->articleService->listPublished(category: 'backend');
@@ -213,11 +214,11 @@ final class ArticleServiceTest extends TestCase
             'slug' => 'article-php',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artPhp->categories()->sync([$this->catBackend->id]);
         $artPhp->tags()->sync([$tagPhp->id]);
 
         $artJs = Article::create([
@@ -225,11 +226,11 @@ final class ArticleServiceTest extends TestCase
             'slug' => 'article-js',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artJs->categories()->sync([$this->catBackend->id]);
         $artJs->tags()->sync([$tagJs->id]);
 
         /** @var LengthAwarePaginator<int, Article> $results */
@@ -246,22 +247,22 @@ final class ArticleServiceTest extends TestCase
             'slug' => 'oldest',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDays(5),
         ]);
+        $oldest->categories()->sync([$this->catBackend->id]);
 
         $newest = Article::create([
             'title' => 'Newest',
             'slug' => 'newest',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subHour(),
         ]);
+        $newest->categories()->sync([$this->catBackend->id]);
 
         /** @var LengthAwarePaginator<int, Article> $results */
         $results = $this->articleService->listPublished();
@@ -274,16 +275,16 @@ final class ArticleServiceTest extends TestCase
     {
         // Création de 15 articles publiés
         for ($i = 1; $i <= 15; $i++) {
-            Article::create([
+            $art = Article::create([
                 'title' => "Article {$i}",
                 'slug' => "article-{$i}",
                 'excerpt' => 'Intro',
                 'content' => 'Corps',
-                'category_id' => $this->catBackend->id,
                 'status' => ArticleStatus::Published,
                 'reading_time' => 3,
                 'published_at' => now()->subDays($i),
             ]);
+            $art->categories()->sync([$this->catBackend->id]);
         }
 
         /** @var LengthAwarePaginator<int, Article> $page1 */
@@ -300,16 +301,16 @@ final class ArticleServiceTest extends TestCase
 
     public function test_find_by_slug_returns_published_article(): void
     {
-        Article::create([
+        $art = Article::create([
             'title' => 'My Article',
             'slug' => 'my-article',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $art->categories()->sync([$this->catBackend->id]);
 
         $found = $this->articleService->findBySlug('my-article');
 
@@ -319,16 +320,16 @@ final class ArticleServiceTest extends TestCase
 
     public function test_find_by_slug_returns_null_for_draft_article(): void
     {
-        Article::create([
+        $draft = Article::create([
             'title' => 'My Draft',
             'slug' => 'my-draft',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Draft,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $draft->categories()->sync([$this->catBackend->id]);
 
         $found = $this->articleService->findBySlug('my-draft');
 
@@ -344,16 +345,16 @@ final class ArticleServiceTest extends TestCase
 
     public function test_find_by_slug_returns_null_for_future_scheduled_article(): void
     {
-        Article::create([
+        $future = Article::create([
             'title' => 'Article Futur',
             'slug' => 'article-futur',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $this->catBackend->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->addDay(),
         ]);
+        $future->categories()->sync([$this->catBackend->id]);
 
         // Un article publié mais planifié dans le futur ne doit pas être accessible
         $found = $this->articleService->findBySlug('article-futur');
@@ -365,16 +366,16 @@ final class ArticleServiceTest extends TestCase
     {
         Article::query()->delete();
         for ($i = 1; $i <= 15; $i++) {
-            Article::create([
+            $art = Article::create([
                 'title' => "Article {$i}",
                 'slug' => "article-{$i}",
                 'excerpt' => 'Intro',
                 'content' => 'Corps',
-                'category_id' => $this->catBackend->id,
                 'status' => ArticleStatus::Published,
                 'reading_time' => 3,
                 'published_at' => now()->subDays($i),
             ]);
+            $art->categories()->sync([$this->catBackend->id]);
         }
 
         $results = $this->articleService->listPublished();
@@ -393,18 +394,20 @@ final class ArticleServiceTest extends TestCase
                 'slug' => "article-{$i}",
                 'excerpt' => 'Intro',
                 'content' => 'Corps',
-                'category_id' => $this->catBackend->id,
                 'status' => ArticleStatus::Published,
                 'reading_time' => 3,
                 'published_at' => now()->subDays($i),
             ]);
+            $art->categories()->sync([$this->catBackend->id]);
             $art->tags()->sync([Tag::create(['name' => "Tag {$i}"])->id]);
         }
 
         DB::enableQueryLog();
         $results2 = $this->articleService->listPublished();
         foreach ($results2->items() as $article) {
-            $article->category?->label;
+            foreach ($article->categories as $category) {
+                $category->label;
+            }
             $article->tags->pluck('name');
         }
         $queriesForTwo = count(DB::getQueryLog());
@@ -417,11 +420,11 @@ final class ArticleServiceTest extends TestCase
                 'slug' => "article-{$i}",
                 'excerpt' => 'Intro',
                 'content' => 'Corps',
-                'category_id' => $this->catBackend->id,
                 'status' => ArticleStatus::Published,
                 'reading_time' => 3,
                 'published_at' => now()->subDays($i),
             ]);
+            $art->categories()->sync([$this->catBackend->id]);
             $art->tags()->sync([Tag::create(['name' => "Tag {$i}"])->id]);
         }
 
@@ -429,7 +432,9 @@ final class ArticleServiceTest extends TestCase
         DB::enableQueryLog();
         $results7 = $this->articleService->listPublished();
         foreach ($results7->items() as $article) {
-            $article->category?->label;
+            foreach ($article->categories as $category) {
+                $category->label;
+            }
             $article->tags->pluck('name');
         }
         $queriesForSeven = count(DB::getQueryLog());
