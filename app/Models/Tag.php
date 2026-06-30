@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  *
  * @property string $id
  * @property string $name
+ * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Article> $articles
@@ -26,6 +27,11 @@ final class Tag extends Model
 
     protected $fillable = [
         'name',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     /**
