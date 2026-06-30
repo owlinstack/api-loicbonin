@@ -21,6 +21,7 @@ final class TagService
     public function listAllNames(): Collection
     {
         return Tag::query()
+            ->where('is_active', true)
             ->pluck('name')
             ->values()
             ->map(fn (mixed $name): string => \is_string($name) ? $name : '');

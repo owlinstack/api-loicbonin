@@ -7,6 +7,8 @@ namespace App\Services;
 use App\Enums\ArticleStatus;
 use App\Models\Article;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Service métier gérant les opérations sur les articles de blog.
@@ -30,10 +32,10 @@ final class ArticleService
             ->where('status', ArticleStatus::Published)
             ->where(fn ($q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()))
             ->when($category, fn ($q, $cat) => $q->whereRelation('categories', 'slug', $cat))
-            ->when($tag, fn ($q, $t) => $q->whereRelation('tags', 'name', $t))
+            ->when($tag, fn ($q, $t) => $q->whereRelation('tags', fn (Builder $query) => $query->where('name', $t)->where('is_active', true)))
             ->with([
                 'categories',
-                'tags',
+                'tags' => fn (Relation $query) => $query->where('is_active', true),
                 'codeFile.folder.parent.parent.codeProject',
                 'codeFolder.parent.parent.codeProject',
                 'codeProject.rootFolders',
@@ -50,7 +52,7 @@ final class ArticleService
             ->where('slug', $slug)
             ->with([
                 'categories',
-                'tags',
+                'tags' => fn (Relation $query) => $query->where('is_active', true),
                 'codeFile.folder.parent.parent.codeProject',
                 'codeFolder.parent.parent.codeProject',
                 'codeProject.rootFolders',

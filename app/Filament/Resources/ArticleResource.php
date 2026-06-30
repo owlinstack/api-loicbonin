@@ -96,7 +96,11 @@ final class ArticleResource extends Resource
                                 ->maxLength(255),
                         ]),
                     Forms\Components\Select::make('tags')
-                        ->relationship('tags', 'name')
+                        ->relationship(
+                            name: 'tags',
+                            titleAttribute: 'name',
+                            modifyQueryUsing: fn ($query) => $query->where('is_active', true)
+                        )
                         ->multiple()
                         ->searchable()
                         ->preload()

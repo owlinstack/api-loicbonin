@@ -240,6 +240,55 @@ final class ArticleServiceTest extends TestCase
         $this->assertEquals('article-php', collect($results->items())->first()?->slug);
     }
 
+    public function test_list_published_filters_by_tag_only_when_active(): void
+    {
+        $tagPhp = Tag::create(['name' => 'PHP', 'is_active' => false]);
+
+        $artPhp = Article::create([
+            'title' => 'Article PHP',
+            'slug' => 'article-php',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+        $artPhp->categories()->sync([$this->catBackend->id]);
+        $artPhp->tags()->sync([$tagPhp->id]);
+
+        /** @var LengthAwarePaginator<int, Article> $results */
+        $results = $this->articleService->listPublished(tag: 'PHP');
+
+        $this->assertCount(0, $results->items());
+    }
+
+    public function test_list_published_excludes_inactive_tags_from_relationships(): void
+    {
+        $tagActive = Tag::create(['name' => 'ActiveTag', 'is_active' => true]);
+        $tagInactive = Tag::create(['name' => 'InactiveTag', 'is_active' => false]);
+
+        $art = Article::create([
+            'title' => 'Article Title',
+            'slug' => 'article-slug',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+        ]);
+        $art->categories()->sync([$this->catBackend->id]);
+        $art->tags()->sync([$tagActive->id, $tagInactive->id]);
+
+        /** @var LengthAwarePaginator<int, Article> $results */
+        $results = $this->articleService->listPublished();
+
+        $this->assertCount(1, $results->items());
+        /** @var Article $retrievedArticle */
+        $retrievedArticle = collect($results->items())->first();
+        $this->assertCount(1, $retrievedArticle->tags->all());
+        $this->assertEquals('ActiveTag', $retrievedArticle->tags->first()?->name);
+    }
+
     public function test_list_published_orders_by_published_at_descending(): void
     {
         $oldest = Article::create([

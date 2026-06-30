@@ -76,8 +76,9 @@ final class GeneralApiTest extends TestCase
 
     public function test_can_list_tags(): void
     {
-        Tag::create(['name' => 'Next.js']);
-        Tag::create(['name' => 'Laravel']);
+        Tag::create(['name' => 'Next.js', 'is_active' => true]);
+        Tag::create(['name' => 'Laravel', 'is_active' => true]);
+        Tag::create(['name' => 'Inactive', 'is_active' => false]);
 
         $response = $this->getJson('/api/v1/tags');
 

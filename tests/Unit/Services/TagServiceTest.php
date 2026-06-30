@@ -30,12 +30,26 @@ final class TagServiceTest extends TestCase
      */
     public function test_list_all_names_returns_flat_array_of_tag_names(): void
     {
-        Tag::create(['name' => 'Laravel']);
-        Tag::create(['name' => 'Docker']);
+        Tag::create(['name' => 'Laravel', 'is_active' => true]);
+        Tag::create(['name' => 'Docker', 'is_active' => true]);
 
         $names = $this->tagService->listAllNames();
 
         $this->assertCount(2, $names);
         $this->assertEqualsCanonicalizing(['Laravel', 'Docker'], $names->all());
+    }
+
+    /**
+     * Teste que la méthode listAllNames n'inclut pas les tags inactifs.
+     */
+    public function test_list_all_names_excludes_inactive_tags(): void
+    {
+        Tag::create(['name' => 'ActiveTag', 'is_active' => true]);
+        Tag::create(['name' => 'InactiveTag', 'is_active' => false]);
+
+        $names = $this->tagService->listAllNames();
+
+        $this->assertCount(1, $names);
+        $this->assertEqualsCanonicalizing(['ActiveTag'], $names->all());
     }
 }
