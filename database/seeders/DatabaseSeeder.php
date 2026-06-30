@@ -134,13 +134,13 @@ final class DatabaseSeeder extends Seeder
                 'title' => 'Architecture modulaire de Filament v5 dans Laravel',
                 'excerpt' => 'Découvrez comment Filament v5 révolutionne l\'écriture des interfaces d\'administration avec son nouveau système unifié de Schemas.',
                 'content' => "Filament v5 introduit un changement majeur dans la manière d'écrire des formulaires et des vues de détails (infolists) en unifiant leur fonctionnement sous la classe `Schema`.\n\nCela permet une plus grande flexibilité, de meilleures performances de rendu avec Livewire v4, et une modularité totale.\n\nDans cet article, nous décrivons la mise en place d'un PanelProvider moderne et la structure des composants.",
-                'category_id' => $categories['backend']->id,
                 'status' => ArticleStatus::Published,
                 'reading_time' => 5,
                 'featured' => true,
                 'published_at' => now(),
             ]
         );
+        $article->categories()->sync([$categories['backend']->id]);
 
         // Link tags to article
         $article->tags()->sync([
@@ -156,13 +156,13 @@ final class DatabaseSeeder extends Seeder
                 'title' => 'Exploration de la structure des dossiers Laravel',
                 'excerpt' => 'Comprendre le rôle de chaque dossier dans l\'arborescence standard d\'un projet Laravel.',
                 'content' => 'Le dossier `app` contient le cœur de votre application. Nous allons explorer en détail sa structure interne...',
-                'category_id' => $categories['backend']->id,
                 'status' => ArticleStatus::Published,
                 'reading_time' => 3,
                 'featured' => false,
                 'published_at' => now(),
             ]
         );
+        $articleFolder->categories()->sync([$categories['backend']->id]);
 
         $articleProject = Article::firstOrCreate(
             ['slug' => 'building-complex-filament-projects'],
@@ -170,13 +170,13 @@ final class DatabaseSeeder extends Seeder
                 'title' => 'Bâtir des projets complexes avec Filament',
                 'excerpt' => 'Comment regrouper ses ressources et personnaliser ses panels d\'administration.',
                 'content' => 'Dans ce guide, nous voyons comment modulariser un projet Filament complet en créant des sections dédiées...',
-                'category_id' => $categories['backend']->id,
                 'status' => ArticleStatus::Published,
                 'reading_time' => 8,
                 'featured' => false,
                 'published_at' => now(),
             ]
         );
+        $articleProject->categories()->sync([$categories['backend']->id]);
 
         // 5.6 Code Projects
         $codeProject = CodeProject::firstOrCreate(

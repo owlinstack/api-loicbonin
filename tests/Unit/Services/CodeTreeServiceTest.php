@@ -36,11 +36,11 @@ final class CodeTreeServiceTest extends TestCase
             'slug' => 'article-code',
             'excerpt' => 'Excerpt',
             'content' => 'Content',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now(),
         ]);
+        $article->categories()->attach($category->id);
 
         // 2. Dossier parent
         /** @var CodeFolder $folderApp */

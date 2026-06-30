@@ -223,7 +223,7 @@ Retourne les données d'identité, les compétences, le parcours professionnel (
 Renvoie la liste ou le détail des réalisations du portfolio (champs `title`, `description`, `techStack`, `liveUrl`, `repoUrl`, `year`).
 
 ### 4. Catégories & Tags (`GET /api/v1/categories` & `GET /api/v1/tags`)
-* `/categories` : Retourne la liste des catégories avec le décompte d'articles publiés associés (`count`). Le comptage exclut les brouillons et les articles archivés.
+* `/categories` : Retourne la liste des catégories avec le décompte d'articles publiés associés (`count`) via la relation plusieurs-à-plusieurs pivot. Le comptage exclut les brouillons et les articles archivés.
 * `/tags` : Retourne la liste à plat des tags uniques sous forme de tableau de chaînes.
 
 ### 5. Explorateur de Code Source

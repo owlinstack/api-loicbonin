@@ -27,28 +27,28 @@ final class GeneralApiTest extends TestCase
         $catTooling = Category::create(['slug' => 'tooling', 'label' => 'Tooling']);
 
         // Article publié sous React
-        Article::create([
+        $art1 = Article::create([
             'title' => 'Article React 1',
             'slug' => 'article-react-1',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $catReact->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $art1->categories()->sync([$catReact->id]);
 
         // Article brouillon sous React (ne doit pas être compté)
-        Article::create([
+        $art2 = Article::create([
             'title' => 'Article React 2',
             'slug' => 'article-react-2',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $catReact->id,
             'status' => ArticleStatus::Draft,
             'reading_time' => 3,
             'published_at' => null,
         ]);
+        $art2->categories()->sync([$catReact->id]);
 
         $response = $this->getJson('/api/v1/categories');
 
@@ -232,11 +232,11 @@ final class GeneralApiTest extends TestCase
             'slug' => 'article-code',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now(),
         ]);
+        $article->categories()->sync([$category->id]);
 
         $folder = CodeFolder::create([
             'name' => 'app',
@@ -382,39 +382,39 @@ final class GeneralApiTest extends TestCase
         $category = Category::create(['slug' => 'rust', 'label' => 'Rust']);
 
         // 2 articles publiés
-        Article::create([
+        $art1 = Article::create([
             'title' => 'Article Rust 1',
             'slug' => 'article-rust-1',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $art1->categories()->sync([$category->id]);
 
-        Article::create([
+        $art2 = Article::create([
             'title' => 'Article Rust 2',
             'slug' => 'article-rust-2',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $art2->categories()->sync([$category->id]);
 
         // 1 brouillon qui ne doit pas être compté
-        Article::create([
+        $artDraft = Article::create([
             'title' => 'Article Rust Draft',
             'slug' => 'article-rust-draft',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Draft,
             'reading_time' => 3,
             'published_at' => null,
         ]);
+        $artDraft->categories()->sync([$category->id]);
 
         $response = $this->getJson('/api/v1/categories');
 
@@ -436,27 +436,27 @@ final class GeneralApiTest extends TestCase
         // pour garantir la robustesse de la resource elle-même.
         $category = Category::create(['slug' => 'rust', 'label' => 'Rust']);
 
-        Article::create([
+        $artFallback1 = Article::create([
             'title' => 'Article Rust 1',
             'slug' => 'article-rust-1',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artFallback1->categories()->sync([$category->id]);
 
-        Article::create([
+        $artFallback2 = Article::create([
             'title' => 'Article Rust 2',
             'slug' => 'article-rust-2',
             'excerpt' => 'Intro',
             'content' => 'Corps',
-            'category_id' => $category->id,
             'status' => ArticleStatus::Published,
             'reading_time' => 3,
             'published_at' => now()->subDay(),
         ]);
+        $artFallback2->categories()->sync([$category->id]);
 
         // Instancie la resource SANS articles_count (sans withCount)
         $resource = new CategoryResource($category);
