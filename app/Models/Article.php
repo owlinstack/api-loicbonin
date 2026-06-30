@@ -22,7 +22,6 @@ use Illuminate\Support\Carbon;
  * @property string $title
  * @property string $excerpt
  * @property string $content
- * @property string|null $category_id
  * @property ArticleStatus $status
  * @property int $reading_time
  * @property bool $featured
@@ -32,7 +31,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $code_project_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Category|null $category
+ * @property-read Collection<int, Category> $categories
  * @property-read Collection<int, Tag> $tags
  * @property-read CodeFile|null $codeFile
  * @property-read CodeFolder|null $codeFolder
@@ -47,7 +46,6 @@ final class Article extends Model
         'title',
         'excerpt',
         'content',
-        'category_id',
         'status',
         'reading_time',
         'featured',
@@ -65,11 +63,11 @@ final class Article extends Model
     ];
 
     /**
-     * @return BelongsTo<Category, $this>
+     * @return BelongsToMany<Category, $this>
      */
-    public function category(): BelongsTo
+    public function categories(): BelongsToMany
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class, 'article_category');
     }
 
     /**
