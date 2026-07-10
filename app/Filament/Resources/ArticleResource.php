@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Ressource Filament de gestion des articles du blog.
@@ -121,10 +122,10 @@ final class ArticleResource extends Resource
                         ->label('Épingler l\'article')
                         ->helperText('Affiche l\'article en tête de page d\'accueil (maximum 10).')
                         ->rules([
-                            function (string $attribute, $value, \Closure $fail) {
+                            function (string $attribute, $value, \Closure $fail): void {
                                 if ($value === true) {
                                     $record = request()->route('record');
-                                    $recordId = $record instanceof \Illuminate\Database\Eloquent\Model ? $record->getKey() : $record;
+                                    $recordId = $record instanceof Model ? $record->getKey() : $record;
                                     $count = Article::query()->where('is_pinned', true)
                                         ->when($recordId, fn ($query) => $query->where('id', '!=', $recordId))
                                         ->count();
@@ -132,7 +133,7 @@ final class ArticleResource extends Resource
                                         $fail('Vous ne pouvez pas épingler plus de 10 articles.');
                                     }
                                 }
-                            }
+                            },
                         ]),
                     Forms\Components\DateTimePicker::make('published_at')
                         ->label('Date de publication'),
