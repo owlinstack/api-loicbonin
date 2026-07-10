@@ -121,11 +121,11 @@ final class ArticleResource extends Resource
                         ->label('Épingler l\'article')
                         ->helperText('Affiche l\'article en tête de page d\'accueil (maximum 10).')
                         ->rules([
-                            fn () => function (string $attribute, $value, \Closure $fail) {
+                            function (string $attribute, $value, \Closure $fail) {
                                 if ($value === true) {
-                                    // Utiliser request()->route('record') s'il s'agit d'un string (ULID)
-                                    $recordId = request()->route('record');
-                                    $count = \App\Models\Article::where('is_pinned', true)
+                                    $record = request()->route('record');
+                                    $recordId = $record instanceof \Illuminate\Database\Eloquent\Model ? $record->getKey() : $record;
+                                    $count = Article::query()->where('is_pinned', true)
                                         ->when($recordId, fn ($query) => $query->where('id', '!=', $recordId))
                                         ->count();
                                     if ($count >= 10) {
