@@ -455,7 +455,7 @@ final class ArticleServiceTest extends TestCase
         $results2 = $this->articleService->listPublished();
         foreach ($results2->items() as $article) {
             foreach ($article->categories as $category) {
-                $category->label;
+                $this->assertNotEmpty($category->label);
             }
             $article->tags->pluck('name');
         }
@@ -482,7 +482,7 @@ final class ArticleServiceTest extends TestCase
         $results7 = $this->articleService->listPublished();
         foreach ($results7->items() as $article) {
             foreach ($article->categories as $category) {
-                $category->label;
+                $this->assertNotEmpty($category->label);
             }
             $article->tags->pluck('name');
         }
@@ -491,5 +491,52 @@ final class ArticleServiceTest extends TestCase
 
         // Le nombre de requêtes doit être identique s'il y a eager loading (évite les requêtes N+1)
         $this->assertEquals($queriesForTwo, $queriesForSeven);
+    }
+
+    public function test_list_published_can_filter_by_pinned_status(): void
+    {
+        // 1. Article publié et épinglé
+        $art1 = Article::create([
+            'title' => 'Article Épinglé',
+            'slug' => 'article-epingle',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+            'is_pinned' => true,
+        ]);
+        $art1->categories()->sync([$this->catBackend->id]);
+
+        // 2. Article publié mais NON épinglé
+        $art2 = Article::create([
+            'title' => 'Article Non Épinglé',
+            'slug' => 'article-non-epingle',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+            'is_pinned' => false,
+        ]);
+        $art2->categories()->sync([$this->catBackend->id]);
+
+        // Test 1: isPinned = true
+        $pinned = $this->articleService->listPublished(isPinned: true);
+        $this->assertCount(1, $pinned->items());
+        $firstPinned = $pinned->items()[0];
+        $this->assertInstanceOf(Article::class, $firstPinned);
+        $this->assertEquals('article-epingle', $firstPinned->slug);
+
+        // Test 2: isPinned = false
+        $notPinned = $this->articleService->listPublished(isPinned: false);
+        $this->assertCount(1, $notPinned->items());
+        $firstNotPinned = $notPinned->items()[0];
+        $this->assertInstanceOf(Article::class, $firstNotPinned);
+        $this->assertEquals('article-non-epingle', $firstNotPinned->slug);
+
+        // Test 3: isPinned = null (all)
+        $all = $this->articleService->listPublished(isPinned: null);
+        $this->assertCount(2, $all->items());
     }
 }

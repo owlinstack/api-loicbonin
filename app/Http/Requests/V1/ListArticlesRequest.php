@@ -16,6 +16,15 @@ final class ListArticlesRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('is_pinned')) {
+            $this->merge([
+                'is_pinned' => filter_var($this->query('is_pinned'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,6 +37,7 @@ final class ListArticlesRequest extends FormRequest
             'tag' => ['nullable', 'string', 'max:255'],
             'page' => ['nullable', 'integer', 'min:1'],
             'pageSize' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'is_pinned' => ['nullable', 'boolean'],
         ];
     }
 
@@ -36,7 +46,7 @@ final class ListArticlesRequest extends FormRequest
      *
      * @param  array<int, string>|string|null  $key
      * @param  mixed  $default
-     * @return array{category?: string|null, tag?: string|null, page?: int|null, pageSize?: int|null}
+     * @return array{category?: string|null, tag?: string|null, page?: int|null, pageSize?: int|null, is_pinned?: bool|null}
      */
     public function validated($key = null, $default = null): array
     {
@@ -52,8 +62,11 @@ final class ListArticlesRequest extends FormRequest
         if (isset($validated['pageSize'])) {
             $validated['pageSize'] = \is_scalar($validated['pageSize']) ? (int) $validated['pageSize'] : null;
         }
+        if (isset($validated['is_pinned'])) {
+            $validated['is_pinned'] = filter_var($validated['is_pinned'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        }
 
-        /** @var array{category?: string|null, tag?: string|null, page?: int|null, pageSize?: int|null} $validated */
+        /** @var array{category?: string|null, tag?: string|null, page?: int|null, pageSize?: int|null, is_pinned?: bool|null} $validated */
         return $validated;
     }
 }

@@ -386,4 +386,48 @@ final class ArticleApiTest extends TestCase
         $response->assertStatus(404)
             ->assertJsonPath('message', 'Article not found');
     }
+
+    public function test_can_filter_articles_by_pinned_status(): void
+    {
+        $pinned = Article::create([
+            'title' => 'Article Épinglé',
+            'slug' => 'article-epingle',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+            'is_pinned' => true,
+        ]);
+        $pinned->categories()->sync([$this->category->id]);
+
+        $normal = Article::create([
+            'title' => 'Article Normal',
+            'slug' => 'article-normal',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+            'is_pinned' => false,
+        ]);
+        $normal->categories()->sync([$this->category->id]);
+
+        // 1. Get pinned only
+        $response = $this->getJson('/api/v1/articles?is_pinned=true');
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'articles')
+            ->assertJsonPath('articles.0.slug', 'article-epingle');
+
+        // 2. Get non-pinned only
+        $response = $this->getJson('/api/v1/articles?is_pinned=false');
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'articles')
+            ->assertJsonPath('articles.0.slug', 'article-normal');
+
+        // 3. Get all
+        $response = $this->getJson('/api/v1/articles');
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'articles');
+    }
 }

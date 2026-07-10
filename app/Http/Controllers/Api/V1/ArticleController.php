@@ -37,12 +37,14 @@ final class ArticleController extends Controller
         $tag = $validated['tag'] ?? null;
         $page = $validated['page'] ?? 1;
         $pageSize = $validated['pageSize'] ?? 10;
+        $isPinned = $validated['is_pinned'] ?? null;
 
         $paginated = $this->articleService->listPublished(
             category: $category,
             tag: $tag,
             page: $page,
             pageSize: $pageSize,
+            isPinned: $isPinned,
         );
 
         return new ArticleCollection($paginated);

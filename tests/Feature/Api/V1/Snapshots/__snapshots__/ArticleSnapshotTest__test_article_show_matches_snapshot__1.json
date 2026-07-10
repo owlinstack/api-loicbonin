@@ -12,6 +12,7 @@
     "publishedAt": "2026-06-25",
     "readingTime": 3,
     "featured": false,
+    "is_pinned": false,
     "codeFile": null,
     "codeFolder": null,
     "codeProject": null
