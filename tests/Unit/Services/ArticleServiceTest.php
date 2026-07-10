@@ -492,4 +492,47 @@ final class ArticleServiceTest extends TestCase
         // Le nombre de requêtes doit être identique s'il y a eager loading (évite les requêtes N+1)
         $this->assertEquals($queriesForTwo, $queriesForSeven);
     }
+
+    public function test_list_published_can_filter_by_pinned_status(): void
+    {
+        // 1. Article publié et épinglé
+        $art1 = Article::create([
+            'title' => 'Article Épinglé',
+            'slug' => 'article-epingle',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+            'is_pinned' => true,
+        ]);
+        $art1->categories()->sync([$this->catBackend->id]);
+
+        // 2. Article publié mais NON épinglé
+        $art2 = Article::create([
+            'title' => 'Article Non Épinglé',
+            'slug' => 'article-non-epingle',
+            'excerpt' => 'Intro',
+            'content' => 'Corps',
+            'status' => ArticleStatus::Published,
+            'reading_time' => 3,
+            'published_at' => now()->subDay(),
+            'is_pinned' => false,
+        ]);
+        $art2->categories()->sync([$this->catBackend->id]);
+
+        // Test 1: isPinned = true
+        $pinned = $this->articleService->listPublished(isPinned: true);
+        $this->assertCount(1, $pinned);
+        $this->assertEquals('article-epingle', $pinned->first()->slug);
+
+        // Test 2: isPinned = false
+        $notPinned = $this->articleService->listPublished(isPinned: false);
+        $this->assertCount(1, $notPinned);
+        $this->assertEquals('article-non-epingle', $notPinned->first()->slug);
+
+        // Test 3: isPinned = null (all)
+        $all = $this->articleService->listPublished(isPinned: null);
+        $this->assertCount(2, $all);
+    }
 }

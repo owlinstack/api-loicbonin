@@ -117,6 +117,23 @@ final class ArticleResource extends Resource
                         ->suffix('min'),
                     Forms\Components\Toggle::make('featured')
                         ->label('Article mis en avant'),
+                    Forms\Components\Toggle::make('is_pinned')
+                        ->label('Épingler l\'article')
+                        ->helperText('Affiche l\'article en tête de page d\'accueil (maximum 10).')
+                        ->rules([
+                            fn () => function (string $attribute, $value, \Closure $fail) {
+                                if ($value === true) {
+                                    // Utiliser request()->route('record') s'il s'agit d'un string (ULID)
+                                    $recordId = request()->route('record');
+                                    $count = \App\Models\Article::where('is_pinned', true)
+                                        ->when($recordId, fn ($query) => $query->where('id', '!=', $recordId))
+                                        ->count();
+                                    if ($count >= 10) {
+                                        $fail('Vous ne pouvez pas épingler plus de 10 articles.');
+                                    }
+                                }
+                            }
+                        ]),
                     Forms\Components\DateTimePicker::make('published_at')
                         ->label('Date de publication'),
                 ]),
@@ -199,6 +216,10 @@ final class ArticleResource extends Resource
                     }),
                 Tables\Columns\IconColumn::make('featured')
                     ->boolean(),
+                Tables\Columns\IconColumn::make('is_pinned')
+                    ->label('Épinglé')
+                    ->boolean()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('published_at')
                     ->date('d/m/Y')
                     ->sortable(),

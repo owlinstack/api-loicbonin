@@ -27,10 +27,12 @@ final class ArticleService
         ?string $tag = null,
         int $page = 1,
         int $pageSize = 10,
+        ?bool $isPinned = null,
     ): LengthAwarePaginator {
         return Article::query()
             ->where('status', ArticleStatus::Published)
             ->where(fn ($q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()))
+            ->when($isPinned !== null, fn ($q) => $q->where('is_pinned', $isPinned))
             ->when($category, fn ($q, $cat) => $q->whereRelation('categories', 'slug', $cat))
             ->when($tag, fn ($q, $t) => $q->whereRelation('tags', fn (Builder $query) => $query->where('name', $t)->where('is_active', true)))
             ->with([

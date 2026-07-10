@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property ArticleStatus $status
  * @property int $reading_time
  * @property bool $featured
+ * @property bool $is_pinned
  * @property Carbon|null $published_at
  * @property string|null $code_file_id
  * @property string|null $code_folder_id
@@ -49,6 +50,7 @@ final class Article extends Model
         'status',
         'reading_time',
         'featured',
+        'is_pinned',
         'published_at',
         'code_file_id',
         'code_folder_id',
@@ -58,6 +60,7 @@ final class Article extends Model
     protected $casts = [
         'status' => ArticleStatus::class,
         'featured' => 'boolean',
+        'is_pinned' => 'boolean',
         'published_at' => 'datetime',
         'reading_time' => 'integer',
     ];
