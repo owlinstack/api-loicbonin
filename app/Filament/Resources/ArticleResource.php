@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -122,15 +123,19 @@ final class ArticleResource extends Resource
                         ->label('Épingler l\'article')
                         ->helperText('Affiche l\'article en tête de page d\'accueil (maximum 10).')
                         ->rules([
-                            function (string $attribute, $value, \Closure $fail): void {
-                                if ($value === true) {
-                                    $record = request()->route('record');
-                                    $recordId = $record instanceof Model ? $record->getKey() : $record;
-                                    $count = Article::query()->where('is_pinned', true)
-                                        ->when($recordId, fn ($query) => $query->where('id', '!=', $recordId))
-                                        ->count();
-                                    if ($count >= 10) {
-                                        $fail('Vous ne pouvez pas épingler plus de 10 articles.');
+                            new class implements ValidationRule
+                            {
+                                public function validate(string $attribute, mixed $value, \Closure $fail): void
+                                {
+                                    if ($value === true) {
+                                        $record = request()->route('record');
+                                        $recordId = $record instanceof Model ? $record->getKey() : $record;
+                                        $count = Article::query()->where('is_pinned', true)
+                                            ->when($recordId, fn ($query) => $query->where('id', '!=', $recordId))
+                                            ->count();
+                                        if ($count >= 10) {
+                                            $fail('Vous ne pouvez pas épingler plus de 10 articles.');
+                                        }
                                     }
                                 }
                             },
