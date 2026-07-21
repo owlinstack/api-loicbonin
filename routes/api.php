@@ -15,5 +15,6 @@ Route::prefix('v1')->middleware('throttle:api')->group(function (): void {
     Route::get('code/projects', [V1\CodeController::class, 'projects']);
     Route::get('code/projects/{slug}/tree', [V1\CodeController::class, 'projectTree']);
     Route::get('code/files/{path}', [V1\CodeController::class, 'show'])->where('path', '.*');
+    Route::get('github-projects', [V1\GithubProjectController::class, 'index']);
     Route::get('profile', [V1\ProfileController::class, 'show']);
 });
