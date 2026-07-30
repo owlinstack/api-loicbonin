@@ -35,6 +35,7 @@ final class ProfileService
                 education: $showEducation ? ($profile->education ?? []) : null,
                 cvPath: $profile->cv_url,
                 avatarPath: $profile->avatar_url,
+                ragChatEnabled: $profile->rag_chat_enabled ?? false,
             );
         }
 
@@ -100,6 +101,7 @@ final class ProfileService
             ],
             cvPath: null,
             avatarPath: null,
+            ragChatEnabled: false,
         );
     }
 }

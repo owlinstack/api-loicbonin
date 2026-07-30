@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property array<int, array{date: string, title: string, description: string}>|null $education
  * @property string|null $cv_url
  * @property string|null $avatar_url
+ * @property bool|null $rag_chat_enabled
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
@@ -38,6 +39,7 @@ final class Profile extends Model
         'show_education',
         'cv_url',
         'avatar_url',
+        'rag_chat_enabled',
     ];
 
     protected $casts = [
@@ -46,5 +48,6 @@ final class Profile extends Model
         'show_timeline' => 'boolean',
         'education' => 'array',
         'show_education' => 'boolean',
+        'rag_chat_enabled' => 'boolean',
     ];
 }

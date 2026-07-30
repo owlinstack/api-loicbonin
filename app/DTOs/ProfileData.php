@@ -26,6 +26,7 @@ final readonly class ProfileData
         public ?array $education,
         public ?string $cvPath,
         public ?string $avatarPath,
+        public bool $ragChatEnabled = false,
     ) {
         //
     }

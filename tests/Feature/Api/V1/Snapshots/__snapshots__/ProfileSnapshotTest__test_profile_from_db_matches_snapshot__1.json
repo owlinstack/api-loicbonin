@@ -25,5 +25,6 @@
         }
     ],
     "cvUrl": "/cv-loic-bonin.pdf",
-    "avatarUrl": null
+    "avatarUrl": null,
+    "ragChatEnabled": false
 }

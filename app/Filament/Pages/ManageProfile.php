@@ -53,6 +53,7 @@ final class ManageProfile extends Page implements HasForms
             'show_timeline' => true,
             'education' => [],
             'show_education' => true,
+            'rag_chat_enabled' => false,
         ]);
 
         $this->form->fill($profile->toArray());
