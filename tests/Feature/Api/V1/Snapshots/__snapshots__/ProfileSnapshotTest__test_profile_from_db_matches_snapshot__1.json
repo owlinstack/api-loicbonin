@@ -26,5 +26,6 @@
     ],
     "cvUrl": "/cv-loic-bonin.pdf",
     "avatarUrl": null,
-    "ragChatEnabled": false
+    "ragChatEnabled": false,
+    "ragLlmProvider": "gemini"
 }

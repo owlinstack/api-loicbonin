@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $cv_url
  * @property string|null $avatar_url
  * @property bool|null $rag_chat_enabled
+ * @property string|null $rag_llm_provider
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
@@ -40,6 +41,7 @@ final class Profile extends Model
         'cv_url',
         'avatar_url',
         'rag_chat_enabled',
+        'rag_llm_provider',
     ];
 
     protected $casts = [

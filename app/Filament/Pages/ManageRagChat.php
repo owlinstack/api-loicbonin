@@ -6,6 +6,8 @@ namespace App\Filament\Pages;
 
 use App\Models\Profile;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -48,10 +50,12 @@ final class ManageRagChat extends Page implements HasForms
             'education' => [],
             'show_education' => true,
             'rag_chat_enabled' => false,
+            'rag_llm_provider' => 'gemini',
         ]);
 
         $this->form->fill([
             'rag_chat_enabled' => $profile->rag_chat_enabled ?? false,
+            'rag_llm_provider' => $profile->rag_llm_provider ?? 'gemini',
         ]);
     }
 
@@ -59,14 +63,33 @@ final class ManageRagChat extends Page implements HasForms
     {
         return $schema
             ->schema([
-                Section::make('Contrôle du Service RAG Chat')
-                    ->description('Activez ou désactivez le widget RAG Chat sur le site public. Lorsque le chat est désactivé, le widget est masqué du site et le backend rejette immédiatement les requêtes pour économiser les crédits Gemini API.')
+                Section::make('Activation & Moteur LLM')
+                    ->description('Activez ou désactivez l\'assistant et choisissez le moteur de réponse LLM.')
                     ->icon('heroicon-o-cpu-chip')
                     ->schema([
                         Toggle::make('rag_chat_enabled')
                             ->label('Activer l\'assistant RAG Chat')
-                            ->helperText('Lorsque désactivé, aucune ressource externe (Gemini) ne sera consommée.')
+                            ->helperText('Lorsque désactivé, le widget est masqué du site et le backend bloque immédiatement les requêtes.')
                             ->default(false),
+
+                        Select::make('rag_llm_provider')
+                            ->label('Fournisseur du modèle de langage (LLM)')
+                            ->helperText('Sélectionnez le fournisseur utilisé pour générer la réponse RAG.')
+                            ->options([
+                                'gemini' => 'API Gemini (Cloud - Rapide & Haute Précision)',
+                                'local' => 'LLM Local (Ollama / Local - Économique / Offline)',
+                            ])
+                            ->default('gemini')
+                            ->required(),
+                    ]),
+
+                Section::make('Moteur Vectoriel & Embeddings (Informations)')
+                    ->description('Configuration du modèle d\'embeddings et de la base vectorielle.')
+                    ->icon('heroicon-o-circle-stack')
+                    ->schema([
+                        Placeholder::make('embedding_info')
+                            ->label('Modèle d\'Embedding actif')
+                            ->content('Gemini Embedding 2 (Cloud) / Gemma ONNX (Local fallback) — Géré au niveau du microservice vectoriel.'),
                     ]),
             ])
             ->statePath('data');
@@ -91,13 +114,14 @@ final class ManageRagChat extends Page implements HasForms
             $state = $this->form->getState();
             $profile->update([
                 'rag_chat_enabled' => $state['rag_chat_enabled'] ?? false,
+                'rag_llm_provider' => $state['rag_llm_provider'] ?? 'gemini',
             ]);
 
             $statusText = ($state['rag_chat_enabled'] ?? false) ? 'activé' : 'désactivé';
 
             Notification::make()
                 ->success()
-                ->title("Assistant RAG Chat {$statusText} avec succès !")
+                ->title("Configuration RAG mise à jour avec succès (Chat {$statusText}) !")
                 ->send();
         }
     }

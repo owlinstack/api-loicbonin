@@ -27,6 +27,7 @@ final readonly class ProfileData
         public ?string $cvPath,
         public ?string $avatarPath,
         public bool $ragChatEnabled = false,
+        public string $ragLlmProvider = 'gemini',
     ) {
         //
     }
