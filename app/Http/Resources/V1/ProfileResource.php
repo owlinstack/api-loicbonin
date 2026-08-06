@@ -33,7 +33,6 @@ final class ProfileResource extends JsonResource
             'cvUrl' => $this->resource->cvPath ? asset('storage/'.$this->resource->cvPath) : '/cv-loic-bonin.pdf',
             'avatarUrl' => $this->resource->avatarPath ? asset('storage/'.$this->resource->avatarPath) : null,
             'ragChatEnabled' => $this->resource->ragChatEnabled,
-            'ragLlmProvider' => $this->resource->ragLlmProvider,
         ];
     }
 }

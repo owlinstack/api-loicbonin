@@ -36,7 +36,6 @@ final class ProfileService
                 cvPath: $profile->cv_url,
                 avatarPath: $profile->avatar_url,
                 ragChatEnabled: $profile->rag_chat_enabled ?? false,
-                ragLlmProvider: $profile->rag_llm_provider ?? 'gemini',
             );
         }
 
@@ -103,7 +102,6 @@ final class ProfileService
             cvPath: null,
             avatarPath: null,
             ragChatEnabled: false,
-            ragLlmProvider: 'gemini',
         );
     }
 }
