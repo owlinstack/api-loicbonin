@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:1.4-php8.4-alpine
+FROM dunglas/frankenphp:1.13-php8.4-alpine
 
 # Dépendances système et extensions PHP pour Laravel 13 + Filament 5
 RUN apk add --no-cache \
@@ -65,7 +65,7 @@ php artisan view:cache
 # Exécution des migrations
 php artisan migrate --force
 
-exec frankenphp run --config /etc/caddy/Caddyfile
+exec frankenphp run --config /etc/frankenphp/Caddyfile
 EOF
 
 ENTRYPOINT ["docker-entrypoint.sh"]
